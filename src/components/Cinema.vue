@@ -3,6 +3,7 @@ import { ref, onMounted, computed } from 'vue';
 import { useRouter } from 'vue-router';
 import { useAuthStore } from '../assets/authVerification/useAuth.js';
 import axios from 'axios';
+import { storeToRefs } from 'pinia';
 
 const cinemas = ref([]);
 const loading = ref(true);
@@ -11,8 +12,8 @@ const selectedCountry = ref('');
 const API_BASE_URL = 'https://localhost:7127';
 
 const router = useRouter();
-const authStore = useAuthStore;
-const { isAdmin } = useAuthStore();
+const authStore = useAuthStore();
+const { isAdmin } = storeToRefs(authStore);
 
 const fetchCinemas = async () => {
   try {

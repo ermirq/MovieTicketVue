@@ -1,7 +1,9 @@
 <script setup>
+import BaseButton from '../atoms/BaseButton.vue';
+import BaseInput from '../atoms/BaseInput.vue';
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
-import { useAuthStore } from '../assets/authVerification/useAuth.js';
+import { useAuthStore } from '../../assets/authVerification/useAuth.js';
 import axios from 'axios';
 import { storeToRefs } from 'pinia';
 
@@ -77,59 +79,45 @@ const handleAddCinema = async () => {
     errorMessage.value = error.message || 'Ndodhi një gabim i papritur i rrjetit.';
   }
 };
+
 </script>
 
 <template>
-  <div class="min-h-screen flex items-center justify-center py-8 px-4 bg-gray-900 text-gray-100">
-    <div class="relative bg-gray-800 bg-opacity-70 p-8 rounded-lg shadow-xl text-center max-w-md w-full mt-20 z-20">
-      <h2 class="text-3xl font-bold text-white mb-6">SHTO KINEMA TË RE</h2>
+    <form @submit.prevent="handleAddCinema">
+        <div class="block text-left text-gray-300 text-sm font-medium mb-2 ml-1">
+            <BaseInput v-model="name"
+                label="Emri i Kinemasë"
+                id="name"
+                placeholder="Emri i Kinemasë"
+                required/>
 
-      <form @submit.prevent="handleAddCinema">
-        <div class="mb-4">
-          <label for="name" class="block text-left text-gray-300 text-sm font-medium mb-2 ml-1">Emri i Kinemasë</label>
-          <input
-            type="text"
-            id="name"
-            v-model="name"
-            class="w-full px-4 py-2 rounded-full bg-gray-700 bg-opacity-50 border border-gray-600 focus:border-blue-500 focus:ring focus:ring-blue-500 focus:ring-opacity-50 text-white placeholder-gray-400 outline-none"
-            placeholder="Emri i Kinemasë"
-            required
-          />
+            <BaseInput v-model="location"
+                label="Lokacioni"
+                id="location"
+                placeholder="Lokacioni i Kinemasë"
+                required/>
+
+            <BaseInput v-model.number="numRows" 
+                type="number"
+                label="Nimri i Rreshtave"
+                id="numRows"
+                placeholder="Numri i rreshtave"
+                min="1"
+                max="26"
+                required/>
+
+            <div class="mb-4">
+            <BaseInput v-model.number="seatsPerRow"
+                type="number"
+                label="Vendet per rresht"
+                id="seatsPerRow"
+                placeholder="Vendet per rresht"
+                min="1"
+                required/>
+            </div>
         </div>
 
-        <div class="mb-4">
-          <label for="location" class="block text-left text-gray-300 text-sm font-medium mb-2 ml-1">Lokacioni</label>
-          <input
-            type="text"
-            id="location"
-            v-model="location"
-            class="w-full px-4 py-2 rounded-full bg-gray-700 bg-opacity-50 border border-gray-600 focus:border-blue-500 focus:ring focus:ring-blue-500 focus:ring-opacity-50 text-white placeholder-gray-400 outline-none"
-            placeholder="Lokacioni i Kinemasë"
-            required
-          />
-        </div>
-
-        <div class="mb-4">
-          <label for="numRows" class="block text-left text-gray-300 text-sm font-medium mb-2 ml-1">Numri i rreshtave</label>
-          <input
-            type="number"
-            id="numRows"
-            v-model.number="numRows" class="w-full px-4 py-2 rounded-full bg-gray-700 bg-opacity-50 border border-gray-600 focus:border-blue-500 focus:ring focus:ring-blue-500 focus:ring-opacity-50 text-white placeholder-gray-400 outline-none"
-            placeholder="Numri i rreshtave"
-            min="1"
-            max="26"
-            required
-          />
-        </div>
-
-        <div class="mb-6">
-          <label for="seatsPerRow" class="block text-left text-gray-300 text-sm font-medium mb-2 ml-1">Vendet per rresht</label>
-          <input type="number" id="seatsPerRow" v-model.number="seatsPerRow"
-            class="w-full px-4 py-2 rounded-full bg-gray-700 bg-opacity-50 border border-gray-600 focus:border-blue-500 focus:ring focus:ring-blue-500 focus:ring-opacity-50 text-white placeholder-gray-400 outline-none"
-            placeholder="Vendet per rresht" min="1" required/>
-        </div>
-
-        <button
+        <BaseButton
           type="submit"
           :disabled="!isAdmin"
           :class="{
@@ -137,12 +125,10 @@ const handleAddCinema = async () => {
             'bg-red-600 hover:bg-red-700 text-white': isAdmin,
             'bg-gray-500 text-gray-300 cursor-not-allowed': !isAdmin}">
           SHTO KINEMA
-        </button>
+        </BaseButton>
 
         <p v-if="successMessage" class="text-green-400 mt-4">{{ successMessage }}</p>
         <p v-if="errorMessage" class="text-red-400 mt-4">{{ errorMessage }}</p>
         <p v-if="!isAdmin" class="text-yellow-400 mt-4">Ju nuk jeni i autorizuar të shtoni kinema.</p>
       </form>
-    </div>
-  </div>
 </template>

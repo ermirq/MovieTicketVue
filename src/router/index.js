@@ -13,6 +13,7 @@ import EditShowtime from '../components/EditShowtime.vue';
 import LoginForm from '../components/organisms/LoginForm.vue';
 import LoginPage from '../components/pages/LoginPage.vue';
 import RegisterPage from '../components/pages/RegisterPage.vue';
+import AddCinemaPage from '../components/pages/AddCinemaPage.vue';
 
 const routes = [
   {
@@ -59,8 +60,8 @@ const routes = [
   },
   {
     path: '/add-cinemas',
-    name: 'AddCinema',
-    component: AddCinema
+    name: 'AddCinemaPage',
+    component: AddCinemaPage
   },
   {
     path: '/edit-cinema/:id',
