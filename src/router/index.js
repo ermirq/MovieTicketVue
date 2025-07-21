@@ -16,6 +16,8 @@ import RegisterPage from '../components/pages/RegisterPage.vue';
 import AddCinemaPage from '../components/pages/AddCinemaPage.vue';
 import AddMoviesPage from '../components/pages/AddMoviesPage.vue';
 import AddShowtimePage from '../components/pages/AddShowtimePage.vue';
+import EditCInemaPage from '../components/pages/EditCInemaPage.vue';
+import EditShowtimePage from '../components/pages/EditShowtimePage.vue';
 
 const routes = [
   {
@@ -67,13 +69,13 @@ const routes = [
   },
   {
     path: '/edit-cinema/:id',
-    name: 'EditCinema',
-    component: EditCinema
+    name: 'EditCinemaPage',
+    component: EditCInemaPage
   },
   {
     path: '/edit-showtime/:id',
-    name: 'EditShowtime',
-    component: EditShowtime
+    name: 'EditShowtimePage',
+    component: EditShowtimePage
   }
 ];
 
