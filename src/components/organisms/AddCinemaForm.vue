@@ -84,38 +84,32 @@ const handleAddCinema = async () => {
 
 <template>
     <form @submit.prevent="handleAddCinema">
-        <div class="block text-left text-gray-300 text-sm font-medium mb-2 ml-1">
-            <BaseInput v-model="name"
-                label="Emri i Kinemasë"
-                id="name"
-                placeholder="Emri i Kinemasë"
-                required/>
+        <BaseInput v-model="name"
+            label="Emri i Kinemasë"
+            id="name"
+            placeholder="Emri i Kinemasë"
+            required/>
 
-            <BaseInput v-model="location"
-                label="Lokacioni"
-                id="location"
-                placeholder="Lokacioni i Kinemasë"
-                required/>
+        <BaseInput v-model="location"
+            label="Lokacioni"
+            id="location"
+            placeholder="Lokacioni i Kinemasë"
+            required/>
 
-            <BaseInput v-model.number="numRows" 
-                type="number"
-                label="Nimri i Rreshtave"
-                id="numRows"
-                placeholder="Numri i rreshtave"
-                min="1"
-                max="26"
-                required/>
+        <BaseInput v-model.number="numRows" 
+            label="Numri i Rreshtave"
+            id="numRows"
+            placeholder="Numri i rreshtave"
+            min="1"
+            max="26"
+            required/>
 
-            <div class="mb-4">
-            <BaseInput v-model.number="seatsPerRow"
-                type="number"
-                label="Vendet per rresht"
-                id="seatsPerRow"
-                placeholder="Vendet per rresht"
-                min="1"
-                required/>
-            </div>
-        </div>
+        <BaseInput v-model.number="seatsPerRow"
+            label="Vendet per rresht"
+            id="seatsPerRow"
+            placeholder="Vendet per rresht"
+            min="1"
+            required/>
 
         <BaseButton
           type="submit"

@@ -14,6 +14,8 @@ import LoginForm from '../components/organisms/LoginForm.vue';
 import LoginPage from '../components/pages/LoginPage.vue';
 import RegisterPage from '../components/pages/RegisterPage.vue';
 import AddCinemaPage from '../components/pages/AddCinemaPage.vue';
+import AddMoviesPage from '../components/pages/AddMoviesPage.vue';
+import AddShowtimePage from '../components/pages/AddShowtimePage.vue';
 
 const routes = [
   {
@@ -38,13 +40,13 @@ const routes = [
   },
   {
     path: '/add-movie',
-    name: 'AddMovie',
-    component: AddMovies
+    name: 'AddMoviesPage',
+    component: AddMoviesPage
   },
   {
     path: '/add-showtime',
-    name: 'AddShowtime',
-    component: AddShowtime
+    name: 'AddShowtimePage',
+    component: AddShowtimePage
   },
   {
     path: '/booking/:showtimeId',

@@ -2,13 +2,15 @@
 import axios from 'axios';
 import { ref, onMounted } from 'vue';
 import { useAuthStore } from '../assets/authVerification/useAuth';
+import { storeToRefs } from 'pinia';
 
 const nextSevenDays = ref([]);
 const movies = ref([]); 
 const searchQuery = ref('');
 const loading = ref(true); 
 const error = ref(null);
-const { isAdmin } = useAuthStore();
+const authStore = useAuthStore();
+const { isAdmin } = storeToRefs(authStore);
 
 const API_BASE_URL = 'https://localhost:7127'; 
 
