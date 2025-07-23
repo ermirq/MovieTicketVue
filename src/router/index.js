@@ -1,29 +1,23 @@
 import { createRouter, createWebHistory } from 'vue-router';
 import Home from '../components/Home.vue'; 
-import Login from '../components/Login.vue'; 
-import Register from '../components/Register.vue';
 import Cinema from '../components/Cinema.vue';
-import AddMovies from '../components/AddMovies.vue';
-import AddShowtime from '../components/AddShowtime.vue';
 import Booking from '../components/Booking.vue';
 import MyAccount from '../components/MyAccount.vue';
-import AddCinema from '../components/AddCinema.vue';
-import EditCinema from '../components/EditCinema.vue';
-import EditShowtime from '../components/EditShowtime.vue';
-import LoginForm from '../components/organisms/LoginForm.vue';
 import LoginPage from '../components/pages/LoginPage.vue';
 import RegisterPage from '../components/pages/RegisterPage.vue';
 import AddCinemaPage from '../components/pages/AddCinemaPage.vue';
-import AddMoviesPage from '../components/pages/AddMoviesPage.vue';
 import AddShowtimePage from '../components/pages/AddShowtimePage.vue';
-import EditCInemaPage from '../components/pages/EditCInemaPage.vue';
 import EditShowtimePage from '../components/pages/EditShowtimePage.vue';
+import EditCinemaPage from '../components/pages/EditCinemaPage.vue'
+import MoviePage from '../components/pages/MoviePage.vue';
+import AddMovies from '../components/pages/AddMoviesPage.vue'
+import AddMoviesPage from '../components/pages/AddMoviesPage.vue';
 
 const routes = [
   {
     path: '/',
     name: 'Home',
-    component: Home,
+    component: MoviePage,
   },
   {
     path: '/login', 
@@ -42,7 +36,7 @@ const routes = [
   },
   {
     path: '/add-movie',
-    name: 'AddMoviesPage',
+    name: 'AddMovies',
     component: AddMoviesPage
   },
   {
@@ -70,7 +64,7 @@ const routes = [
   {
     path: '/edit-cinema/:id',
     name: 'EditCinemaPage',
-    component: EditCInemaPage
+    component: EditCinemaPage
   },
   {
     path: '/edit-showtime/:id',

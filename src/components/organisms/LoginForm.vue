@@ -18,10 +18,11 @@ const API_BASE_URL = 'https://localhost:7127';
 const handleLogin = async () => {
   errorMessage.value = '';
   try {
-    const { data } = await axios.post(`${API_BASE_URL}/api/ApplicationUser/login`, {
+    const response = await axios.post(`${API_BASE_URL}/api/ApplicationUser/login`, {
       identifier: identifier.value,
       password: password.value,
     });
+    const data = response.data;
     if (!data.token) throw new Error('No token received');
     setAuth(data.token, identifier.value, data.roles || []);
     alert('Kyçja u krye me sukses!');
@@ -55,7 +56,7 @@ const handleLogin = async () => {
       <a href="#">Keni harruar fjalëkalimin?</a>
     </div>
 
-    <BaseButton type="submit">KYÇUNI</BaseButton>
+    <BaseButton type="submit"  class="bg-red-700 hover:bg-red-900">KYÇUNI</BaseButton>
 
     <p v-if="errorMessage" class="text-red-400 mt-4">{{ errorMessage }}</p>
   </form>
