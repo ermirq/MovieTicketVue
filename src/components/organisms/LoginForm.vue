@@ -56,7 +56,7 @@ const handleLogin = async () => {
       <a href="#">Keni harruar fjalëkalimin?</a>
     </div>
 
-    <BaseButton type="submit"  class="bg-red-700 hover:bg-red-900">KYÇUNI</BaseButton>
+    <BaseButton type="submit"  class="bg-red-700 hover:bg-red-900 w-full rounded-full">KYÇUNI</BaseButton>
 
     <p v-if="errorMessage" class="text-red-400 mt-4">{{ errorMessage }}</p>
   </form>

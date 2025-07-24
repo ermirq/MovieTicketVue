@@ -1,13 +1,39 @@
 <script setup>
+import { ref } from 'vue';
+import { useRouter } from 'vue-router';
 import BaseButton from '../atoms/BaseButton.vue';
+import AdminActions from './AdminActions.vue';
 
 const props = defineProps({
-  movie: { type: Object, required: true },
-  isAdmin: { type: Boolean, default: false }
+  movie: Object,
+  showtime: Object, 
+  isAdmin: Boolean,
+  variant: {
+    type: String,
+    default: 'home' 
+  }
 });
-const emit = defineEmits(['delete']);
-const handleDelete = (movieId, movieTitle) => {
-  emit('delete', movieId, movieTitle);
+
+const emit = defineEmits(['delete', 'edit-showtime', 'delete-showtime']);
+const router = useRouter();
+
+const selectedShowtimeId = ref('');
+
+const handleShowtimeChange = () => {
+  if (selectedShowtimeId.value) {
+    router.push(`/booking/${selectedShowtimeId.value}`);
+  }
+};
+
+const handleDeleteMovie = () => {
+  emit('delete', props.movie.id, props.movie.title);
+};
+const handleEditShowtime = () => {
+  emit('edit-showtime', props.showtime.id);
+};
+
+const handleDeleteShowtime = () => {
+  emit('delete-showtime', props.showtime.id, props.showtime.movie?.title); // Pass movie title for confirmation
 };
 
 const formatDate = (dateString) => {
@@ -24,10 +50,9 @@ const formatTime = (dateString) => {
 </script>
 
 <template>
-  <div
-    class="group bg-gray-100 dark:bg-gray-800 rounded-lg shadow-lg overflow-hidden transition-transform duration-200 hover:scale-105 flex flex-col w-full max-w-xs sm:max-w-none cursor-pointer mb-10 relative">
+  <div v-if="variant === 'home'" class="group bg-gray-100 dark:bg-gray-800 rounded-lg shadow-lg overflow-hidden transition-transform duration-200 hover:scale-105 flex flex-col w-full max-w-xs sm:max-w-none cursor-pointer mb-10 relative">
     <img :src="movie.posterUrl || 'https://via.placeholder.com/250x370?text=No+Poster'" alt="Movie Poster" class="w-full h-auto object-cover"/>
-
+    
     <div class="p-4 flex flex-col justify-end flex-grow">
       <h3 class="text-l font-bold mb-2 text-gray-900 dark:text-white uppercase">{{ movie.title }}</h3>
       <p class="text-sm text-gray-700 dark:text-gray-400">
@@ -44,11 +69,41 @@ const formatTime = (dateString) => {
       <p class="text-center mb-1"><strong>Kategoria:</strong> {{ movie.genre || 'N/A' }}</p>
       <p class="text-center"><strong>Kohëzgjatja:</strong> {{ movie.durationInMinutes ? movie.durationInMinutes + ' min' : 'N/A' }}</p>
 
-      <div v-if="isAdmin" class="bg-red-600 hover:bg-red-700 text-white rounded-md transition-colors duration-200 flex items-center justify-center mt-2">
-        <BaseButton @click="handleDelete(movie.id, movie.title)">
+      <div v-if="movie.showtimes && movie.showtimes.length">
+        <select
+          v-model="selectedShowtimeId"
+          @change="handleShowtimeChange"
+          class="mt-2 p-2 rounded bg-gray-600 border border-gray-300 dark:border-gray-600 text-white">
+          <option disabled value="">Zgjidh shfaqjen</option>
+          <option v-for="showtime in movie.showtimes" :key="showtime.id" :value="showtime.id">
+            {{ formatDate(showtime.startTime) }} - {{ formatTime(showtime.startTime) }}
+          </option>
+        </select>
+      </div>
+
+      <div v-if="isAdmin" class="bg-red-600 hover:bg-red-700 text-white rounded-md mt-2">
+        <BaseButton @click="handleDeleteMovie">
           <i class="fas fa-trash-alt"></i>
         </BaseButton>
       </div>
+    </div>
+  </div>
+
+  <div v-else-if="variant === 'cinema'" class="bg-gray-700 bg-opacity-60 rounded-md flex flex-col items-center text-center p-2 w-full h-full">
+    <img :src="showtime.movie?.posterUrl" alt="Movie Poster" class="w-full h-[300px] object-cover rounded-md mb-3">
+    <h4 class="text-lg font-semibold text-white">{{ showtime.movie?.title }}</h4>
+
+    <router-link :to="`/booking/${showtime.id}`" custom v-slot="{ navigate }">
+      <BaseButton @click="navigate" class="mt-auto bg-red-600 hover:bg-red-700 text-white font-bold mt-2 py-2 px-4 rounded-md">
+        Rezervo Biletën
+      </BaseButton>
+    </router-link>
+
+    <div v-if="isAdmin" class="flex space-x-2 w-sm justify-center items-center mt-2">
+      <AdminActions :iconOnly="true" @edit="handleEditShowtime" @delete="handleDeleteShowtime">
+        <template #edit-text></template>
+        <template #delete-text></template>
+      </AdminActions>
     </div>
   </div>
 </template>

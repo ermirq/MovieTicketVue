@@ -71,13 +71,14 @@ const fetchMoviesWithShowtimes = async () => {
 };
 
 const searchMovies = async () => {
-  if (!searchQuery.value.trim()) return;
+  if (!searchQuery.value.trim()) {
+    fetchMoviesWithShowtimes();
+  } else {
   loading.value = true;
+  }
   try {
     const response = await axios.get(`${API_BASE_URL}/api/Movies/search?name=${encodeURIComponent(searchQuery.value)}`);
     movies.value = response.data;
-  } catch (err) {
-    error.value = err;
   } finally {
     loading.value = false;
   }

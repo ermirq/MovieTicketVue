@@ -88,6 +88,6 @@ const handleRegister = async () => {
                 placeholder="Fjalëkalimi" 
                 required/>
         </div>
-            <BaseButton type="submit" class="bg-red-700 mt-5">REGJISTROHUNI</BaseButton>
+            <BaseButton type="submit" class="bg-red-700 mt-5 w-full rounded-full">REGJISTROHUNI</BaseButton>
     </form>
 </template>

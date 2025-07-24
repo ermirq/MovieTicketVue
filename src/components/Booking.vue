@@ -140,7 +140,13 @@ const formatDate = (isoString) => {
 };
 
 onMounted(() => {
+  if (!isAuthenticated.value) {
+    alert('Your are not loged in');
+    router.push('/login')
+    return;
+  } else {
   fetchShowtimeDetails();
+  }
 });
 </script>
 

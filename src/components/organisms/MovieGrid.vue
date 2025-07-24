@@ -20,6 +20,7 @@ const handleDelete = (movieId, movieTitle) => {
       :key="movie.id"
       :movie="movie"
       :isAdmin="isAdmin"
+      variant="home"
       @delete="handleDelete"
     />
   </div>

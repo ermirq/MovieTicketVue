@@ -97,6 +97,7 @@ const formatTime = (dateString) => {
 
 onMounted(() => {
   if (!isAuthenticated.value) {
+    alert('Your are not loged in');
     router.push('/login');
   } else {
     fetchBookings();
