@@ -1,4 +1,4 @@
-<script setup lang="ts">
+<script setup>
 import BaseButton from '../atoms/BaseButton.vue';
 import BaseInput from '../atoms/BaseInput.vue';
 import PasswordInput from '../molecules/PasswordInput.vue';

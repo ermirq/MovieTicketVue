@@ -24,7 +24,7 @@ const togglePasswordVisibility = () => {
   <div class="relative mb-2">
    <label :for="id" class="text-sm font-medium ml-2 text-gray-300">{{ label }}</label>
     <input :type="passwordFieldType" :placeholder="placeholder" :id="id"
-      class="w-full mt-2 px-4 py-3 pr-10 rounded-full bg-gray-700 border border-gray-600 text-white placeholder-gray-400"
+      class="w-full mt-2 px-4 py-2 pr-10 rounded-full bg-gray-700 border border-gray-600 text-white placeholder-gray-400"
       :value="modelValue" @input="$emit('update:modelValue', $event.target.value)" />
 
     <button type="button" @click="togglePasswordVisibility"

@@ -12,19 +12,22 @@ const { setAuth } = useAuthStore();
 const identifier = ref('');
 const password = ref('');
 const errorMessage = ref('');
+const loading = ref(false);
 
 const API_BASE_URL = 'https://localhost:7127';
 
 const handleLogin = async () => {
   errorMessage.value = '';
+  loading.value = true;
   try {
     const response = await axios.post(`${API_BASE_URL}/api/ApplicationUser/login`, {
       identifier: identifier.value,
       password: password.value,
     });
-    const data = response.data;
-    if (!data.token) throw new Error('No token received');
-    setAuth(data.token, identifier.value, data.roles || []);
+     const { token, identifier, roles } = response.data;
+    if (!token)
+     throw new Error('No token received');
+    setAuth(token, identifier.value, roles || []);
     alert('Kyçja u krye me sukses!');
     router.push('/');
   } catch (error) {

@@ -24,24 +24,14 @@ const { isAdmin } = storeToRefs(authStore);
 const fetchCinemas = async () => {
   try {
     const response = await axios.get(`${API_BASE_URL}/api/Cinemas`);
-    const data = response.data;
-    cinemas.value = data;
+    cinemas.value = response.data;
   } catch (err) {
     console.error('Failed to fetch cinemas:', err);
-
-    if (err.response) {
-      error.value =
-        err.response.data.message ||
-        err.response.data.detail ||
-        'Gabim gjatë ngarkimit të kinemave.';
-    } else {
-      error.value = 'Gabim gjatë ngarkimit të kinemave: ' + err.message;
-    }
+    error.value = err.response?.data?.message || err.message || 'Gabim gjatë ngarkimit të kinemave.';
   } finally {
     loading.value = false;
   }
 };
-
 
 const filteredCinemas = computed(() =>
   !selectedCountry.value
@@ -51,12 +41,25 @@ const filteredCinemas = computed(() =>
       )
 );
 
-const handleEditCinema = id => router.push(`/edit-cinema/${id}`);
-const handleEditShowtime = id => router.push(`/edit-showtime/${id}`);
+const handleEditCinema = (id) => {
+  if (!isAdmin.value) {
+    alert('Ju nuk jeni të autorizuar për të edituar kinema.');
+    return;
+  }
+  router.push(`/edit-cinema/${id}`);
+};
+
+const handleEditShowtime = (id) => {
+  if (!isAdmin.value) {
+    alert('Ju nuk jeni të autorizuar për të edituar shfaqje.');
+    return;
+  }
+  router.push(`/edit-showtime/${id}`);
+};
 
 const handleDeleteCinema = async (cinemaId, cinemaName) => {
   if (!isAdmin.value) {
-    alert('Ju nuk jeni i autorizuar të fshini kinema.');
+    alert('Ju nuk jeni të autorizuar të fshini kinema.');
     return;
   }
   if (!confirm(`Jeni të sigurt që dëshironi të fshini kinemanë "${cinemaName}"? Kjo do të fshijë gjithashtu të gjitha vendet dhe shfaqjet e lidhura!`)) {
@@ -66,28 +69,25 @@ const handleDeleteCinema = async (cinemaId, cinemaName) => {
   try {
     const token = localStorage.getItem('userToken');
     if (!token) {
-      router.push('/login');
+      router.push({ name: 'LoginPage', query: { redirect: router.currentRoute.value.fullPath } });
       return;
     }
 
     await axios.delete(`${API_BASE_URL}/api/Cinemas/${cinemaId}`, {
-      headers: {
-        'Authorization': `Bearer ${token}`
-      }
+      headers: { Authorization: `Bearer ${token}` }
     });
+
     cinemas.value = cinemas.value.filter(c => c.id !== cinemaId);
     alert('Kinemaja u fshi me sukses!');
-
   } catch (err) {
     console.error('Gabim gjatë fshirjes së kinemasë:', err);
     error.value = err.message || 'Ndodhi një gabim i papritur gjatë fshirjes së kinemasë.';
   }
 };
 
-
 const handleDeleteShowtime = async (showtimeId, movieTitle) => {
   if (!isAdmin.value) {
-    alert('Ju nuk jeni i autorizuar të fshini shfaqje.');
+    alert('Ju nuk jeni të autorizuar të fshini shfaqje.');
     return;
   }
   if (!confirm(`Jeni të sigurt që dëshironi të fshini shfaqjen për filmin "${movieTitle}"? Kjo do të fshijë gjithashtu të gjitha rezervimet e lidhura!`)) {
@@ -97,14 +97,12 @@ const handleDeleteShowtime = async (showtimeId, movieTitle) => {
   try {
     const token = localStorage.getItem('userToken');
     if (!token) {
-      router.push('/login');
+      router.push({ name: 'LoginPage', query: { redirect: router.currentRoute.value.fullPath } });
       return;
     }
 
     await axios.delete(`${API_BASE_URL}/api/Showtimes/${showtimeId}`, {
-      headers: {
-        'Authorization': `Bearer ${token}`
-      }
+      headers: { Authorization: `Bearer ${token}` }
     });
 
     alert('Shfaqja u fshi me sukses!');

@@ -128,24 +128,21 @@ const handleUpdateShowtime = async () => {
 
   } catch (error) {
     console.error('Gabim gjatë përditësimit të shfaqjes:', error);
-    errorMessage.value = error.message || 'Ndodhi një gabim i papritur i rrjetit.';
-  }
 
-  if (error.response) {
-    const errData = error.response.data;
-
-    errorMessage.value =
-      errData.message ||
-      (errData.errors ? Object.values(errData.errors).flat().join(' ') : null) ||
-      errData.detail || 'Ndodhi një gabim gjatë përditësimit.';
-    
-    if (error.response.status === 401 || error.response.status === 403) {
-      errorMessage.value = 'Ju nuk jeni i autorizuar të kryeni këtë veprim.';
-    }
-
+    if (error.response) {
+      const errData = error.response.data;
+      errorMessage.value =
+        errData.message ||
+        (errData.errors ? Object.values(errData.errors).flat().join(' ') : null) ||
+        errData.detail || 'Ndodhi një gabim gjatë përditësimit.';
+      
+      if (error.response.status === 401 || error.response.status === 403) {
+        errorMessage.value = 'Ju nuk jeni i autorizuar të kryeni këtë veprim.';
+      }
     } else {
       errorMessage.value = error.message || 'Ndodhi një gabim i papritur i rrjetit.';
     }
+  }
 };
 
 onMounted(async () => {
@@ -190,13 +187,13 @@ onMounted(async () => {
 
         <BaseInput type="date"
             id="date"
-            v-model="startTimeDate"
+            v-model="selectedDate"
             label="Data e Shfaqjes"
             required />
 
         <BaseInput type="time"
             id="time"
-            v-model="startTimeTime"
+            v-model="selectedTime"
             label="Ora e Shfaqjes"
             required />
 
