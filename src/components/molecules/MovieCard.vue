@@ -3,6 +3,7 @@ import { ref } from 'vue';
 import { useRouter } from 'vue-router';
 import BaseButton from '../atoms/BaseButton.vue';
 import AdminActions from './AdminActions.vue';
+import { formatDate, formatTime } from '../../assets/utils/dateUtils';
 
 const props = defineProps({
   movie: Object,
@@ -34,18 +35,6 @@ const handleEditShowtime = () => {
 
 const handleDeleteShowtime = () => {
   emit('delete-showtime', props.showtime.id, props.showtime.movie?.title); // Pass movie title for confirmation
-};
-
-const formatDate = (dateString) => {
-  if (!dateString) return '';
-  const date = new Date(dateString);
-  return `${String(date.getDate()).padStart(2, '0')}.${String(date.getMonth() + 1).padStart(2, '0')}.${date.getFullYear()}`;
-};
-
-const formatTime = (dateString) => {
-  if (!dateString) return '';
-  const date = new Date(dateString);
-  return `${String(date.getHours()).padStart(2, '0')}:${String(date.getMinutes()).padStart(2, '0')}`;
 };
 </script>
 

@@ -7,6 +7,7 @@ import LoadingSpinner from '../atoms/LoadingSpinner.vue';
 import FiltersBar from '../organisms/FiltersBar.vue';
 import MovieGrid from '../organisms/MovieGrid.vue';
 import { storeToRefs } from 'pinia';
+import { formatDateForValue } from '../../assets/utils/dateUtils';
 
 const movies = ref([]);
 const searchQuery = ref('');
@@ -23,12 +24,6 @@ const countries = [
   { name: 'Kosovo', value: 'kosovo' },
   { name: 'Albania', value: 'albania' }
 ];
-
-const formatDateForValue = (date) => {
-  const day = String(date.getDate()).padStart(2, '0');
-  const month = String(date.getMonth() + 1).padStart(2, '0');
-  return `${day}/${month}`;
-};
 
 const generateNextSevenDays = () => {
   const today = new Date();

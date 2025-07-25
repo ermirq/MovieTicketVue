@@ -12,6 +12,8 @@ import MoviePage from '../components/pages/MoviePage.vue';
 import AddMoviesPage from '../components/pages/AddMoviesPage.vue';
 import CinemaPage from '../components/pages/CinemaPage.vue';
 import EditCInemaPage from '../components/pages/EditCInemaPage.vue';
+import BookingPage from '../components/pages/BookingPage.vue';
+import MyAccountPage from '../components/pages/MyAccountPage.vue';
 
 const routes = [
   {
@@ -47,14 +49,14 @@ const routes = [
   {
     path: '/booking/:showtimeId',
     name: 'Booking',
-    component: Booking,
+    component: BookingPage,
     props: true,
     meta: {requiresAuth: true}
   },
   {
     path: '/myaccount',
     name: 'MyAccount',
-    component: MyAccount
+    component: MyAccountPage
   },
   {
     path: '/add-cinemas',
