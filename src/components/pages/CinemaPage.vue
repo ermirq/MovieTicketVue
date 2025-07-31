@@ -1,5 +1,5 @@
 <script setup>
-import { ref, computed, onMounted } from 'vue';
+import { ref, computed, onMounted, shallowRef } from 'vue';
 import { useRouter } from 'vue-router';
 import { useAuthStore } from '../../assets/authVerification/useAuth.js';
 import { storeToRefs } from 'pinia';
@@ -12,7 +12,7 @@ import ErrorMessage from '../atoms/ErrorMessage.vue';
 
 const API_BASE_URL = 'https://localhost:7127';
 
-const cinemas = ref([]);
+const cinemas = shallowRef([]);
 const loading = ref(true);
 const error = ref(null);
 const selectedCountry = ref('');
@@ -113,7 +113,9 @@ const handleDeleteShowtime = async (showtimeId, movieTitle) => {
   }
 };
 
-onMounted(fetchCinemas);
+onMounted(
+  fetchCinemas
+);
 </script>
 
 <template>

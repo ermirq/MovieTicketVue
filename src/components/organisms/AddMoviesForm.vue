@@ -4,13 +4,14 @@ import BaseInput from '../atoms/BaseInput.vue';
 import { ref } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
 import { useAuthStore } from '../../assets/authVerification/useAuth.js';
-import axios from 'axios';
 import { storeToRefs } from 'pinia';
+import { useApi } from '../../composables/useApi.js';
 
 const authStore = useAuthStore();
 const { isAdmin } = storeToRefs(authStore); 
 const router = useRouter();
 const route = useRoute();
+const { post } = useApi();
 
 const title = ref('');
 const description = ref('');
@@ -19,8 +20,6 @@ const durationInMinutes = ref('');
 const posterUrl = ref(''); 
 const errorMessage = ref('');
 const successMessage = ref('');
-
-const API_BASE_URL = 'https://localhost:7127';
 
 const handleAddMovie = async () => {
   if (!isAdmin.value) {
@@ -48,7 +47,7 @@ const handleAddMovie = async () => {
       return;
     }
 
-    await axios.post(`${API_BASE_URL}/api/Movies`, {
+    await post('/api/Movies', {
         title: title.value,
         description: description.value,
         genre: genre.value,

@@ -1,17 +1,18 @@
 <script setup>
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, shallowRef } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { useAuthStore } from '../../assets/authVerification/useAuth.js';
-import axios from 'axios';
 import { storeToRefs } from 'pinia';
 import BaseSelect from '../atoms/BaseSelect.vue';
 import BaseButton from '../atoms/BaseButton.vue';
 import BaseInput from '../atoms/BaseInput.vue';
+import { useApi } from '../../composables/useApi.js';
 
 const authStore = useAuthStore();
 const { isAdmin } = storeToRefs(authStore);
 const route = useRoute();
 const router = useRouter();
+const { get, put } = useApi();
 
 const showtimeId = ref(null);
 const selectedMovieId = ref(null);
@@ -20,22 +21,20 @@ const selectedCinemaId = ref(null);
 const selectedDate = ref(''); 
 const selectedTime = ref(''); 
 
-const movies = ref([]);
-const cinemas = ref([]);
+const movies = shallowRef([]);
+const cinemas = shallowRef([]);
 
 const loading = ref(true);
 const errorMessage = ref('');
 const successMessage = ref('');
 
-const API_BASE_URL = 'https://localhost:7127';
-
 const fetchDropdownData = async () => {
     try {
-        const moviesResponse = await axios.get(`${API_BASE_URL}/api/Movies`);
-        const cinemasResponse = await axios.get(`${API_BASE_URL}/api/Cinemas`);
+        const moviesResponse = await get('/api/Movies');
+        const cinemasResponse = await get('/api/Cinemas');
 
-        movies.value = moviesResponse.data;
-        cinemas.value = cinemasResponse.data;
+        movies.value = moviesResponse;
+        cinemas.value = cinemasResponse;
     } catch (error) {
         console.error('Error fetching dropdown data:', error);
         errorMessage.value = 'Dështoi ngarkimi i të dhënave për filmat dhe kinematë.';
@@ -62,17 +61,18 @@ const fetchShowtime = async () => {
       return;
     }
 
-    const response = await axios.get(`${API_BASE_URL}/api/Showtimes/${id}`, {
+    const response = await get(`/api/Showtimes/${id}`, {
       headers: {
         'Authorization': `Bearer ${token}`
       }
     });
 
-    const data = response.data;
-    selectedMovieId.value = data.movieId;
-    selectedCinemaId.value = data.cinemaId;
+    if(response){
+    selectedMovieId.value = response.movieId;
+    selectedCinemaId.value = response.cinemaId;
+  }
 
-    const dateTime = new Date(data.startTime);
+    const dateTime = new Date(response.startTime);
     selectedDate.value = dateTime.toISOString().slice(0, 10); 
     selectedTime.value = dateTime.toTimeString().slice(0, 5); 
   } catch (error) {
@@ -107,7 +107,7 @@ const handleUpdateShowtime = async () => {
 
     const combinedStartTime = `${selectedDate.value}T${selectedTime.value}:00`; 
 
-    const response = await axios.put(`${API_BASE_URL}/api/Showtimes/${showtimeId.value}`, {
+    const response = await put(`/api/Showtimes/${showtimeId.value}`, {
         movieId: selectedMovieId.value,
         cinemaId: selectedCinemaId.value,
         startTime: combinedStartTime 
@@ -117,8 +117,6 @@ const handleUpdateShowtime = async () => {
         'Authorization': `Bearer ${token}`
       }
     });
-
-    const data = response.data;
 
     successMessage.value = 'Shfaqja u përditësua me sukses!';
     

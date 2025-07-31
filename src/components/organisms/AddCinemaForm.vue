@@ -4,13 +4,14 @@ import BaseInput from '../atoms/BaseInput.vue';
 import { ref } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
 import { useAuthStore } from '../../assets/authVerification/useAuth.js';
-import axios from 'axios';
 import { storeToRefs } from 'pinia';
+import { useApi } from '../../composables/useApi.js';
 
 const authStore = useAuthStore();
 const { isAdmin } = storeToRefs(authStore);
 const router = useRouter();
 const route = useRoute();
+const { post } = useApi();
 
 const name = ref('');
 const location = ref('');
@@ -20,7 +21,6 @@ const seatsPerRow = ref(null);
 const errorMessage = ref('');
 const successMessage = ref('');
 
-const API_BASE_URL = 'https://localhost:7127';
 
 const handleAddCinema = async () => {
   if (!isAdmin.value) {
@@ -53,7 +53,7 @@ const handleAddCinema = async () => {
       return;
     }
 
-    await axios.post(`${API_BASE_URL}/api/Cinemas`, {
+    await post('/api/Cinemas', {
         name: name.value,
         location: location.value,
         numRows: numRows.value,

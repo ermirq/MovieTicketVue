@@ -1,22 +1,21 @@
 <script setup>
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, shallowRef } from 'vue';
 import { useRouter } from 'vue-router';
 import { useAuthStore } from '../../assets/authVerification/useAuth.js'; 
-import axios from 'axios';
 import { storeToRefs } from 'pinia';
+import { useApi } from '../../composables/useApi.js';
 
 import BaseTitle from '../atoms/BaseTitle.vue';
 import BaseAlert from '../atoms/BaseAlert.vue';
 import BookingCard from '../molecules/BookingCard.vue';
 
-const bookings = ref([]);
+const bookings = shallowRef([]);
 const loading = ref(true);
 const errorMessage = ref('');
 const authStore = useAuthStore();
 const { isAuthenticated } = storeToRefs(authStore);
 const router = useRouter();
-
-const API_BASE_URL = 'https://localhost:7127'; 
+const { get, del } = useApi();
 
 const fetchBookings = async () => {
   loading.value = true;
@@ -29,11 +28,11 @@ const fetchBookings = async () => {
       return;
     }
 
-    const response = await axios.get(`${API_BASE_URL}/api/Bookings/user-bookings`, {
+    const response = await get(`/api/Bookings/user-bookings`, {
       headers: { 'Authorization': `Bearer ${token}` }
     });
     
-    bookings.value = response.data;
+    bookings.value = response;
   } catch (error) {
     errorMessage.value = error.message || 'Gabim gjatë marrjes së rezervimeve.';
   } finally {
@@ -51,7 +50,7 @@ const deleteBooking = async (bookingId) => {
       return;
     }
 
-    await axios.delete(`${API_BASE_URL}/api/Bookings/${bookingId}`, {
+    await del(`/api/Bookings/${bookingId}`, {
       headers: { 'Authorization': `Bearer ${token}` }
     });
 
@@ -74,7 +73,7 @@ onMounted(() => {
 
 <template>
   <div class="min-h-screen flex flex-col items-center py-8 px-4 bg-gray-900 text-gray-100 pt-20">
-    <BaseTitle>Llogaria Ime - Rezervimet</BaseTitle>
+    <BaseTitle v-once>Llogaria Ime - Rezervimet</BaseTitle>
 
     <div v-if="loading" class="text-white text-lg text-center">Duke ngarkuar rezervimet...</div>
     <BaseAlert v-else-if="errorMessage" type="error">{{ errorMessage }}</BaseAlert>

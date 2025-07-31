@@ -1,11 +1,10 @@
 <script setup>
-import { ref, onMounted, computed } from 'vue';
+import { ref, onMounted, computed, shallowRef } from 'vue';
 import { useRouter } from 'vue-router';
 import { useAuthStore } from '../../assets/authVerification/useAuth.js';
 import { storeToRefs } from 'pinia';
 import { formatDate, formatTime } from '../../assets/utils/dateUtils.js';
-import axios from 'axios';
-
+import { useApi } from '../../composables/useApi.js';
 import BaseTitle from '../atoms/BaseTitle.vue';
 import BaseButton from '../atoms/BaseButton.vue';
 import BaseAlert from '../atoms/BaseAlert.vue';
@@ -16,32 +15,37 @@ const props = defineProps({
   showtimeId: { type: [String, Number], required: true }
 });
 
+const { get, post } = useApi();
 const router = useRouter();
 const authStore = useAuthStore();
 const { isAuthenticated } = storeToRefs(authStore);
 
-const showtime = ref(null);
-const seats = ref([]);
+const showtime = shallowRef(null);
+const seats = shallowRef([]);
 const selectedSeats = ref([]);
 const loading = ref(true);
 const errorMessage = ref('');
 const successMessage = ref('');
 
-const API_BASE_URL = 'https://localhost:7127';
 
 const fetchShowtimeDetails = async () => {
   loading.value = true;
   errorMessage.value = '';
   try {
-    const response = await axios.get(`${API_BASE_URL}/api/Showtimes/${props.showtimeId}/details`);
-    showtime.value = response.data;
-    seats.value = response.data.seats;
+    const response = await get(`/api/Showtimes/${props.showtimeId}/details`);
+    console.log(response)
+    if (!response) {
+      throw new Error('Të dhënat e shfaqjes mungojnë.');
+    }
+    showtime.value = response;
+    seats.value = response.seats;
   } catch (error) {
     errorMessage.value = error.message || 'Dështoi ngarkimi i detajeve të shfaqjes.';
   } finally {
     loading.value = false;
   }
 };
+
 
 const toggleSeatSelection = (seatId) => {
   if (selectedSeats.value.includes(seatId)) {
@@ -77,8 +81,7 @@ const handleBooking = async () => {
 
   try {
     const token = localStorage.getItem('userToken');
-    await axios.post(
-      `${API_BASE_URL}/api/Bookings/book`,
+    await post('/api/Bookings/book',
       { showtimeId: props.showtimeId, seatIds: selectedSeats.value },
       { headers: { Authorization: `Bearer ${token}` } }
     );
@@ -95,6 +98,17 @@ const handleBooking = async () => {
   }
 };
 
+const selectedSeatLabels = computed(() => {
+  return selectedSeats.value
+    .map(id => {
+      const seat = seats.value.find(s => s.id === id);
+      return seat ? `${seat.row}${seat.number}` : null;
+    })
+    .filter(Boolean)
+    .join(', ') || 'Asnjë';
+});
+
+
 onMounted(() => {
   if (!isAuthenticated.value) {
     router.push('/login');
@@ -106,7 +120,7 @@ onMounted(() => {
 
 <template>
   <div class="min-h-screen flex flex-col items-center py-8 px-4 bg-gray-900 text-gray-100 pt-20">
-    <BaseTitle>Rezervimi i Biletave</BaseTitle>
+    <BaseTitle v-once>Rezervimi i Biletave</BaseTitle>
 
     <div v-if="loading" class="text-white text-center text-lg">Duke ngarkuar detajet e shfaqjes...</div>
     <BaseAlert v-else-if="errorMessage" type="error">{{ errorMessage }}</BaseAlert>
@@ -133,12 +147,7 @@ onMounted(() => {
         </div>
       </div>
     
-      <p class="text-gray-300 text-center my-4"> Vendet e zgjedhura:
-        {{ selectedSeats.length > 0 ? selectedSeats.map(id => {
-          const seat = seats.find(s => s.id === id);
-          return seat ? `${seat.row}${seat.number}` : null;
-        }).filter(Boolean).join(', ') : 'Asnjë' }}
-      </p>
+      <p class="text-gray-300 text-center my-4">Vendet e zgjedhura: {{ selectedSeatLabels }}</p>
 
       <BaseButton
         :disabled="selectedSeats.length === 0 || !isAuthenticated"

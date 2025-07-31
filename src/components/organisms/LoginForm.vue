@@ -2,32 +2,47 @@
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { useAuthStore } from '../../assets/authVerification/useAuth';
-import axios from 'axios';
 import BaseInput from '../atoms/BaseInput.vue';
 import PasswordInput from '../molecules/PasswordInput.vue';
 import BaseButton from '../atoms/BaseButton.vue';
+import { useApi } from '../../composables/useApi';
+import * as yup from 'yup';
+import { useForm, useField } from 'vee-validate';
 
 const router = useRouter();
 const { setAuth } = useAuthStore();
-const identifier = ref('');
-const password = ref('');
 const errorMessage = ref('');
 const loading = ref(false);
+const {post} = useApi();
 
-const API_BASE_URL = 'https://localhost:7127';
+const schema = yup.object({
+  indentifier: yup.string().required('UserName or email is required'),
+  password: yup.string().required('Password is required')
+})
+
+const { errors } = useForm({
+  validationSchema: schema,
+  initialValues: {
+    identifier: '',
+    password: ''
+  }
+});
+
+const { value: identifier } = useField('identifier');
+const { value: password } = useField('password')
 
 const handleLogin = async () => {
   errorMessage.value = '';
   loading.value = true;
   try {
-    const response = await axios.post(`${API_BASE_URL}/api/ApplicationUser/login`, {
+      const data = await post('/api/ApplicationUser/login', {
       identifier: identifier.value,
       password: password.value,
     });
-     const { token, identifier, roles } = response.data;
-    if (!token)
-     throw new Error('No token received');
-    setAuth(token, identifier.value, roles || []);
+
+    if (!data.token) throw new Error('No token received');
+    setAuth(data.token, data.identifier || identifier.value, data.roles || []);
+
     alert('Kyçja u krye me sukses!');
     router.push('/');
   } catch (error) {
@@ -38,22 +53,10 @@ const handleLogin = async () => {
 };
 </script>
 
-
 <template>
   <form @submit.prevent="handleLogin">
-    <BaseInput
-      v-model="identifier"
-      label="Email or Username"
-      id="identifier"
-      placeholder="Email or Username"
-      required/>
-
-    <PasswordInput
-      v-model="password"
-      label="Fjalëkalimi"
-      id="password"
-      placeholder="Fjalëkalimi"
-      required/>
+    <BaseInput v-model="identifier" label="Username or Email" placeholder="Username or Email" :errors="errors.indentifier" />
+    <PasswordInput v-model="password" label="Password" placeholder="Password" :errors="errors.password" />
       
     <div class="text-right text-sm text-gray-400 hover:text-blue-400 mr-1 mb-6">
       <a href="#">Keni harruar fjalëkalimin?</a>

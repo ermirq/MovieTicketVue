@@ -1,26 +1,47 @@
 <script setup>
-import BaseButton from '../atoms/BaseButton.vue';
-import BaseInput from '../atoms/BaseInput.vue';
-import PasswordInput from '../molecules/PasswordInput.vue';
-import { ref } from 'vue';
 import { useRouter } from 'vue-router';
-import axios from 'axios';
+import { useForm, useField } from 'vee-validate';
+import * as yup from 'yup';
+import BaseInput from '../atoms/BaseInput.vue';
+import BaseButton from '../atoms/BaseButton.vue';
+import { useApi } from '../../composables/useApi';    
+import PasswordInput from '../molecules/PasswordInput.vue';
 
 const router = useRouter();
-const username = ref('');
-const email = ref('');
-const firstName = ref('');
-const lastName = ref('');
-const phoneNumber = ref('');
-const password = ref('')
-const errorMessage = ref ('');
+const { post } = useApi();
 
-const API_BASE_URL = 'https://localhost:7127';
+const schema = yup.object({
+  username: yup.string().required('Username is required').min(3),
+  email: yup.string().required('Email is required').email('Invalid email'),
+  firstName: yup.string().required('First Name is required'),
+  lastName: yup.string().required('Last Name is required'),
+  password: yup.string().required('Password is required').min(8),
+  phoneNumber: yup.string().matches(/^\d+$/, 'Must be numbers only').required('Phone number is required')
+  });
+
+const { errors } = useForm({
+  validationSchema: schema,
+  initialValues: {
+    username: '',
+    email: '',
+    firstName: '',
+    lastName: '',
+    password: '',
+    phoneNumber: '', 
+  },
+});
+
+const { value: username } = useField('username');
+const { value: email } = useField('email');
+const { value: firstName} = useField('firstName');
+const { value: lastName } = useField('lastName')
+const { value: password } = useField('password');
+const { value: phoneNumber} = useField('phoneNumber');
 
 const handleRegister = async () => {
   if (username.value && firstName.value && lastName.value && phoneNumber.value && email.value && password.value) {
     try {
-      const response = await axios.post(`${API_BASE_URL}/api/ApplicationUser/register`, {
+      const response = await post(`/api/ApplicationUser/register`, {
           username: username.value,
           firstName: firstName.value,
           lastName: lastName.value,
@@ -34,10 +55,8 @@ const handleRegister = async () => {
             }
         }
     );
-
       alert('Regjistrimi u krye me sukses!');
       router.push('/login'); 
-
     } catch (error) {
       console.error('Error during registration:', error);
       alert(error.message);
@@ -46,48 +65,19 @@ const handleRegister = async () => {
     alert('Please fill in all fields.');
   }
 };
-
 </script>
 
 <template>
-    <form @submit.prevent="handleRegister">
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
-            <BaseInput v-model="username"
-                label="Username"
-                id="identifier"
-                placeholder="Username" 
-                required/>
+  <form @submit.prevent="handleRegister" class="space-y-4">
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
+      <BaseInput v-model="username" label="Username" placeholder="Username" :error="errors.username" />
+      <BaseInput v-model="email" label="Email" placeholder="Email" :error="errors.email" />
+      <BaseInput v-model="firstName" label="Emri" placeholder="Emri" :error="errors.firstName" />
+      <BaseInput v-model="lastName" label="Mbiemri" placeholder="Mbiemri" :error="errors.lastName"/>
+      <PasswordInput v-model="password" type="password" label="Password" placeholder="Password" :error="errors.password" />
+      <BaseInput v-model="phoneNumber" label="Numri i telefonit" placeholder="Numri i telefonit" :error="errors.phoneNumber"/>
+    </div>
 
-            <BaseInput v-model="email"
-                label="Email"
-                id="email"
-                placeholder="Email" 
-                required/>
-            
-            <BaseInput v-model="firstName"
-                label="Emri"
-                id="firstName"
-                placeholder="Emri" 
-                required/>
-
-            <BaseInput v-model="lastName"
-                label="Mbiemri"
-                id="lastName"
-                placeholder="Mbiemri" 
-                required/>
-
-            <BaseInput v-model="phoneNumber"
-                label="Numri i telefonit"
-                id="phoneNumber"
-                placeholder="Numri i telefonit" 
-                required/>
-
-            <PasswordInput v-model="password"
-                label="Fjalëkalimi"
-                id="password"
-                placeholder="Fjalëkalimi" 
-                required/>
-        </div>
-            <BaseButton type="submit" class="bg-red-700 mt-5 w-full rounded-full">REGJISTROHUNI</BaseButton>
-    </form>
+    <BaseButton type="submit" class="bg-red-700 w-full rounded-full">REGJISTROHUNI</BaseButton>
+  </form>
 </template>

@@ -1,16 +1,17 @@
 <script setup>
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, computed } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { useAuthStore } from '../../assets/authVerification/useAuth.js';
-import axios from 'axios';
 import { storeToRefs } from 'pinia';
 import BaseInput from '../atoms/BaseInput.vue';
 import BaseButton from '../atoms/BaseButton.vue';
+import { useApi } from '../../composables/useApi.js';
 
 const authStore = useAuthStore();
 const { isAdmin } = storeToRefs(authStore);
 const route = useRoute();
 const router = useRouter();
+const { put, get } = useApi();
 
 const cinemaId = ref(null);
 const name = ref('');
@@ -22,7 +23,8 @@ const loading = ref(true);
 const errorMessage = ref('');
 const successMessage = ref('');
 
-const API_BASE_URL = 'https://localhost:7127';
+const isFormValid = computed(() => name.value && location.value);
+
 
 const fetchCinema = async () => {
   loading.value = true;
@@ -44,17 +46,18 @@ const fetchCinema = async () => {
       return;
     }
 
-    const response = await axios.get(`${API_BASE_URL}/api/Cinemas/${id}`, {
-      headers: {
-        'Authorization': `Bearer ${token}`
-      }
+  const response = await get(`/api/Cinemas/${id}`, {
+      headers: { 'Authorization': `Bearer ${token}` }
     });
 
-    const data = response.data
-    name.value = data.name;
-    location.value = data.location;
-    numRows.value = data.numRows;        
-    seatsPerRow.value = data.seatsPerRow; 
+    if (response) {
+      name.value = response.name;
+      location.value = response.location;
+      numRows.value = response.numRows;
+      seatsPerRow.value = response.seatsPerRow;
+    } else {
+      errorMessage.value = 'Nuk u gjetën të dhënat e kinemasë.';
+    }
 
   } catch (error) {
     console.error('Gabim gjatë ngarkimit të kinemasë:', error);
@@ -73,7 +76,7 @@ const handleUpdateCinema = async () => {
   errorMessage.value = '';
   successMessage.value = '';
 
-  if (!name.value || !location.value) {
+  if (!isFormValid.value) {
     errorMessage.value = 'Ju lutemi plotësoni të gjitha fushat.';
     return;
   }
@@ -86,7 +89,7 @@ const handleUpdateCinema = async () => {
         return;
     }
 
-    const response = await axios.put(`${API_BASE_URL}/api/Cinemas/${cinemaId.value}`, {
+     await put(`/api/Cinemas/${cinemaId.value}`, {
         name: name.value,
         location: location.value
     },
@@ -141,7 +144,7 @@ onMounted(() => {
       <div v-else-if="errorMessage" class="text-red-400 mt-4">{{ errorMessage }}</div>
       <div v-else-if="!isAdmin" class="text-yellow-400 mt-4">Ju nuk jeni i autorizuar të përditësoni kinema.</div>
 
-      <form v-else @submit.prevent="handleUpdateCinema">
+      <form v-else @submit.prevent="handleUpdateCinema" >
           <BaseInput
             type="text"
             id="name"

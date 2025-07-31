@@ -1,34 +1,37 @@
 <script setup>
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, shallowRef, computed } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
 import { useAuthStore } from '../../assets/authVerification/useAuth.js';
-import axios from 'axios';
 import { storeToRefs } from 'pinia';
 import BaseSelect from '../atoms/BaseSelect.vue';
 import BaseInput from '../atoms/BaseInput.vue';
 import BaseButton from '../atoms/BaseButton.vue';
+import { useApi } from '../../composables/useApi.js';
 
 const authStore = useAuthStore(); 
 const { isAdmin } = storeToRefs(authStore);
 const router = useRouter();
 const route = useRoute();
+const { post, get } = useApi();
 
 const selectedMovieId = ref('');
 const selectedCinemaId = ref('');
 const startTimeDate = ref(''); 
 const startTimeTime = ref(''); 
 
-const movies = ref([]);
-const cinemas = ref([]);
+const movies = shallowRef([]);
+const cinemas = shallowRef([]);
 const errorMessage = ref('');
 const successMessage = ref('');
 
-const API_BASE_URL = 'https://localhost:7127'; 
+const isFormValid = computed(() => {
+  return selectedMovieId.value && selectedCinemaId.value && startTimeDate.value && startTimeTime.value;
+});
+
 
 const fetchMovies = async () => {
   try {
-    const response = await axios.get(`${API_BASE_URL}/api/Movies`); 
-    movies.value = response.data;
+    movies.value = await get('/api/Movies'); 
   } catch (error) {
     console.error('Error fetching movies:', error);
     errorMessage.value = 'Dështoi ngarkimi i filmave.'; 
@@ -37,8 +40,7 @@ const fetchMovies = async () => {
 
 const fetchCinemas = async () => {
   try {
-    const response = await axios.get(`${API_BASE_URL}/api/Cinemas`); 
-    cinemas.value = response.data;
+    cinemas.value = await get('/api/Cinemas'); 
   } catch (error) {
     console.error('Error fetching cinemas:', error);
     errorMessage.value = 'Dështoi ngarkimi i kinemave.'; 
@@ -59,7 +61,7 @@ const handleAddShowtime = async () => {
   errorMessage.value = '';
   successMessage.value = '';
 
-  if (!selectedMovieId.value || !selectedCinemaId.value || !startTimeDate.value || !startTimeTime.value) {
+  if (!isFormValid.value) {
     errorMessage.value = 'Ju lutemi plotësoni të gjitha fushat.'; 
     return;
   }
@@ -73,7 +75,7 @@ const handleAddShowtime = async () => {
       return;
     }
 
-    await axios.post(`${API_BASE_URL}/api/Showtimes`, { 
+    await post('/api/Showtimes', { 
         movieId: parseInt(selectedMovieId.value),
         cinemaId: parseInt(selectedCinemaId.value),
         startTime: combinedStartTime 
@@ -101,7 +103,7 @@ const handleAddShowtime = async () => {
 </script>
 
 <template>
-  <form @submit.prevent="handleAddShowtime">
+  <form @submit.prevent="handleAddShowtime" >
     <BaseSelect
       id="movie"
       v-model="selectedMovieId"
@@ -134,7 +136,7 @@ const handleAddShowtime = async () => {
     
     <BaseButton
       type="submit"
-      :disabled="!isAdmin"
+      :disabled="!isAdmin || !isFormValid"
       :class="{
         'w-full font-bold py-3 px-4 rounded-full transition duration-300': true,
         'bg-red-600 hover:bg-red-700 text-white': isAdmin,

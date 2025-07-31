@@ -34,7 +34,7 @@ const handleEditShowtime = () => {
 };
 
 const handleDeleteShowtime = () => {
-  emit('delete-showtime', props.showtime.id, props.showtime.movie?.title); // Pass movie title for confirmation
+  emit('delete-showtime', props.showtime.id, props.showtime.movie?.title); 
 };
 </script>
 
