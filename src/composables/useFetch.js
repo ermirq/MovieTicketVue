@@ -7,20 +7,40 @@ export function useFetch(endpoint, options = {}) {
   const error = ref(null);
   const loading = ref(true);
 
+  const {
+    method = 'GET',
+    headers = {},
+    body = null,
+    immediate = true, 
+  } = options;
+
   const fetchData = async () => {
     loading.value = true;
+    error.value = null;
+
     try {
-      const res = await fetch(`${API_BASE_URL}${endpoint}`);
-      if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
-      result.value = await res.json();
+      const response = await fetch(`${API_BASE_URL}${endpoint}`, {
+        method,
+        headers: {
+          'Content-Type': 'application/json',
+          ...headers,
+        },
+        body: body ? JSON.stringify(body) : null,
+      });
+
+      if (!response.ok) {
+        throw new Error(`Gabim HTTP: ${response.status} ${response.statusText}`);
+      }
+
+      result.value = await response.json();
     } catch (err) {
-      error.value = err;
+      error.value = err.message || 'Gabim i panjohur gjatë fetch.';
     } finally {
       loading.value = false;
     }
   };
 
-  fetchData();
+  if (immediate) fetchData();
 
   return { result, error, loading, refetch: fetchData };
 }

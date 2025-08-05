@@ -1,9 +1,10 @@
 <script setup>
-import { ref, onMounted, shallowRef } from 'vue';
+import { ref, onMounted, shallowRef, watch } from 'vue';
 import { useRouter } from 'vue-router';
 import { useAuthStore } from '../../assets/authVerification/useAuth.js'; 
 import { storeToRefs } from 'pinia';
 import { useApi } from '../../composables/useApi.js';
+import { useFetch } from '../../composables/useFetch.js';
 
 import BaseTitle from '../atoms/BaseTitle.vue';
 import BaseAlert from '../atoms/BaseAlert.vue';
@@ -15,33 +16,36 @@ const errorMessage = ref('');
 const authStore = useAuthStore();
 const { isAuthenticated } = storeToRefs(authStore);
 const router = useRouter();
-const { get, del } = useApi();
+const { del } = useApi();
 
-const fetchBookings = async () => {
-  loading.value = true;
-  errorMessage.value = '';
-
-  try {
-    const token = localStorage.getItem('userToken');
-    if (!token) {
-      router.push('/login');
-      return;
-    }
-
-    const response = await get(`/api/Bookings/user-bookings`, {
-      headers: { 'Authorization': `Bearer ${token}` }
-    });
-    
-    bookings.value = response;
-  } catch (error) {
-    errorMessage.value = error.message || 'Gabim gjatë marrjes së rezervimeve.';
-  } finally {
-    loading.value = false;
+const fetchBookings = () => {
+  const token = localStorage.getItem('userToken');
+  if (!token) {
+    router.push('/login');
+    return;
   }
+
+  const { result, error, loading: fetchLoading } = useFetch('/api/Bookings/user-bookings', {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+
+  watch(result, (data) => {
+    if (data) bookings.value = data;
+  });
+
+  watch(error, (err) => {
+    if (err) errorMessage.value = err;
+  });
+
+  watch(fetchLoading, (isLoading) => {
+    loading.value = isLoading;
+  });
 };
 
 const deleteBooking = async (bookingId) => {
-  if (!confirm('A jeni te sigurtë që doni ta fshini rezervimin?')) return; 
+  if (!confirm('A jeni të sigurtë që doni ta fshini rezervimin?')) return; 
 
   try {
     const token = localStorage.getItem('userToken');
@@ -55,9 +59,9 @@ const deleteBooking = async (bookingId) => {
     });
 
     bookings.value = bookings.value.filter(b => b.id !== bookingId);
-    alert('Rezervimi u fshie me sukses!');
+    alert('Rezervimi u fshi me sukses!');
   } catch (error) {
-    errorMessage.value = error.message || 'Error occurred while cancelling booking.';
+    errorMessage.value = error.message || 'Gabim gjatë fshirjes së rezervimit.';
   }
 };
 
@@ -70,6 +74,7 @@ onMounted(() => {
   }
 });
 </script>
+
 
 <template>
   <div class="min-h-screen flex flex-col items-center py-8 px-4 bg-gray-900 text-gray-100 pt-20">

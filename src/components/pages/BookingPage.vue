@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted, computed, shallowRef } from 'vue';
+import { ref, onMounted, computed, shallowRef, watch } from 'vue';
 import { useRouter } from 'vue-router';
 import { useAuthStore } from '../../assets/authVerification/useAuth.js';
 import { storeToRefs } from 'pinia';
@@ -10,6 +10,7 @@ import BaseButton from '../atoms/BaseButton.vue';
 import BaseAlert from '../atoms/BaseAlert.vue';
 import SeatSelection from '../organisms/SeatSelection.vue';
 import ShowtimeInfo from '../molecules/ShowtimeInfo.vue';
+import { useFetch } from '../../composables/useFetch.js';
 
 const props = defineProps({
   showtimeId: { type: [String, Number], required: true }
@@ -23,29 +24,33 @@ const { isAuthenticated } = storeToRefs(authStore);
 const showtime = shallowRef(null);
 const seats = shallowRef([]);
 const selectedSeats = ref([]);
-const loading = ref(true);
 const errorMessage = ref('');
 const successMessage = ref('');
 
+const token = localStorage.getItem('userToken');
+if (!token) {
+  router.push('/login');
+}
 
-const fetchShowtimeDetails = async () => {
-  loading.value = true;
-  errorMessage.value = '';
-  try {
-    const response = await get(`/api/Showtimes/${props.showtimeId}/details`);
-    console.log(response)
-    if (!response) {
-      throw new Error('Të dhënat e shfaqjes mungojnë.');
-    }
-    showtime.value = response;
-    seats.value = response.seats;
-  } catch (error) {
-    errorMessage.value = error.message || 'Dështoi ngarkimi i detajeve të shfaqjes.';
-  } finally {
-    loading.value = false;
+const { result: showtimeData, error, loading, refetch } = useFetch(
+  `/api/Showtimes/${props.showtimeId}/details`,
+  {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
   }
-};
+);
 
+watch(showtimeData, (data) => {
+  if (data) {
+    showtime.value = data;
+    seats.value = data.seats || [];
+  }
+});
+
+watch(error, (err) => {
+  if (err) errorMessage.value = err;
+});
 
 const toggleSeatSelection = (seatId) => {
   if (selectedSeats.value.includes(seatId)) {
@@ -80,19 +85,26 @@ const handleBooking = async () => {
   }
 
   try {
-    const token = localStorage.getItem('userToken');
-    await post('/api/Bookings/book',
-      { showtimeId: props.showtimeId, seatIds: selectedSeats.value },
-      { headers: { Authorization: `Bearer ${token}` } }
+    await post(
+      '/api/Bookings/book',
+      {
+        showtimeId: props.showtimeId,
+        seatIds: selectedSeats.value,
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
     );
 
     successMessage.value = 'Rezervimi u krye me sukses!';
     selectedSeats.value = [];
-    fetchShowtimeDetails();
+    refetch(); 
 
     setTimeout(() => {
       successMessage.value = '';
-    }, 3000); 
+    }, 3000);
   } catch (error) {
     errorMessage.value = error.message || 'Ndodhi një gabim i papritur.';
   }
@@ -108,15 +120,13 @@ const selectedSeatLabels = computed(() => {
     .join(', ') || 'Asnjë';
 });
 
-
 onMounted(() => {
   if (!isAuthenticated.value) {
     router.push('/login');
-  } else {
-    fetchShowtimeDetails();
   }
 });
 </script>
+
 
 <template>
   <div class="min-h-screen flex flex-col items-center py-8 px-4 bg-gray-900 text-gray-100 pt-20">
