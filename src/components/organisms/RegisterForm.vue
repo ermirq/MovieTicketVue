@@ -4,7 +4,7 @@ import { useForm, useField } from 'vee-validate';
 import * as yup from 'yup';
 import BaseInput from '../atoms/BaseInput.vue';
 import BaseButton from '../atoms/BaseButton.vue';
-import { useApi } from '../../composables/useApi';    
+import { useApi } from '../../composables/useApi';      
 import PasswordInput from '../molecules/PasswordInput.vue';
 
 const router = useRouter();
@@ -68,8 +68,7 @@ const handleRegister = async () => {
 </script>
 
 <template>
-  <form @submit.prevent="handleRegister" class="space-y-4">
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
+  <form @submit.prevent="handleRegister" class="space-y-4" aria-label="Forma e regjistrimit"> <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
       <BaseInput v-model="username" label="Username" placeholder="Username" :error="errors.username" />
       <BaseInput v-model="email" label="Email" placeholder="Email" :error="errors.email" />
       <BaseInput v-model="firstName" label="Emri" placeholder="Emri" :error="errors.firstName" />
@@ -78,6 +77,7 @@ const handleRegister = async () => {
       <BaseInput v-model="phoneNumber" label="Numri i telefonit" placeholder="Numri i telefonit" :error="errors.phoneNumber"/>
     </div>
 
-    <BaseButton type="submit" class="bg-red-700 w-full rounded-full">REGJISTROHUNI</BaseButton>
+    <BaseButton type="submit" class="bg-red-700 w-full rounded-full" aria-label="Regjistrohuni"> REGJISTROHUNI
+    </BaseButton>
   </form>
 </template>

@@ -16,6 +16,6 @@ const props = defineProps({
       :seat="seat"
       :isSelected="selectedSeats.includes(seat.id)"
       @toggle="$emit('toggle', seat.id)"
-    />
+      :aria-label="'Vendi ' + row[0]?.row + ' ' + seat.number" />
   </div>
 </template>

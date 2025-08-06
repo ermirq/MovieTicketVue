@@ -89,7 +89,7 @@ const handleUpdateCinema = async () => {
         return;
     }
 
-     await put(`/api/Cinemas/${cinemaId.value}`, {
+      await put(`/api/Cinemas/${cinemaId.value}`, {
         name: name.value,
         location: location.value
     },
@@ -138,13 +138,13 @@ onMounted(() => {
 </script>
 
 <template>
-  
-      <div v-if="loading" class="text-white">Duke ngarkuar të dhënat e kinemasë...</div>
-      <div v-else-if="errorMessage && !isAdmin" class="text-red-400 mt-4">{{ errorMessage }}</div>
-      <div v-else-if="errorMessage" class="text-red-400 mt-4">{{ errorMessage }}</div>
-      <div v-else-if="!isAdmin" class="text-yellow-400 mt-4">Ju nuk jeni i autorizuar të përditësoni kinema.</div>
+    
+      <div v-if="loading" class="text-white" aria-live="polite">Duke ngarkuar të dhënat e kinemasë...</div>
+      <div v-else-if="errorMessage && !isAdmin" class="text-red-400 mt-4" aria-live="assertive">{{ errorMessage }}</div>
+      <div v-else-if="errorMessage" class="text-red-400 mt-4" aria-live="assertive">{{ errorMessage }}</div>
+      <div v-else-if="!isAdmin" class="text-yellow-400 mt-4" aria-live="assertive">Ju nuk jeni i autorizuar të përditësoni kinema.</div>
 
-      <form v-else @submit.prevent="handleUpdateCinema" >
+      <form v-else @submit.prevent="handleUpdateCinema" aria-label="Forma per perditesimin e kinemase">
           <BaseInput
             type="text"
             id="name"
@@ -167,10 +167,11 @@ onMounted(() => {
           :class="{
             'w-full font-bold py-3 px-4 rounded-full transition duration-300': true,
             'bg-blue-600 hover:bg-blue-700 text-white': isAdmin && !loading,
-            'bg-gray-500 text-gray-300 cursor-not-allowed': !isAdmin || loading}">
+            'bg-gray-500 text-gray-300 cursor-not-allowed': !isAdmin || loading}"
+          aria-label="Përditëso Kinemanë">
           PËRDITËSO KINEMANË
         </BaseButton>
 
-        <p v-if="successMessage" class="text-green-400 mt-4">{{ successMessage }}</p>
+        <p v-if="successMessage" class="text-green-400 mt-4" aria-live="polite">{{ successMessage }}</p>
     </form>
 </template>

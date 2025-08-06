@@ -75,23 +75,44 @@ onMounted(() => {
 });
 </script>
 
-
 <template>
   <div class="min-h-screen flex flex-col items-center py-8 px-4 bg-gray-900 text-gray-100 pt-20">
-    <BaseTitle v-once>Llogaria Ime - Rezervimet</BaseTitle>
+    <BaseTitle v-once aria-label="Titulli i faqes">Llogaria Ime - Rezervimet</BaseTitle>
 
-    <div v-if="loading" class="text-white text-lg text-center">Duke ngarkuar rezervimet...</div>
-    <BaseAlert v-else-if="errorMessage" type="error">{{ errorMessage }}</BaseAlert>
-    <div v-else-if="bookings.length === 0" class="text-white text-lg text-center">
+    <div
+      v-if="loading"
+      class="text-white text-lg text-center"
+      role="status"
+      aria-live="polite"
+    >
+      Duke ngarkuar rezervimet...
+    </div>
+
+    <BaseAlert
+      v-else-if="errorMessage"
+      type="error"
+      role="alert"
+      aria-live="assertive"
+    >
+      {{ errorMessage }}
+    </BaseAlert>
+
+    <div
+      v-else-if="bookings.length === 0"
+      class="text-white text-lg text-center"
+      role="status"
+      aria-live="polite"
+    >
       Nuk keni bërë asnjë rezervim.
     </div>
 
-    <div v-else class="w-full max-w-4xl space-y-6">
+    <div v-else class="w-full max-w-4xl space-y-6" aria-label="Lista e rezervimeve">
       <BookingCard 
         v-for="booking in bookings" 
         :key="booking.id" 
         :booking="booking"
         @deleteBooking="deleteBooking"
+        :aria-label="`Rezervim për ${booking.movieTitle}`"
       />
     </div>
   </div>

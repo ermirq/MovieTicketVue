@@ -5,7 +5,7 @@ defineProps({
 </script>
 
 <template>
-  <div class="text-center text-red-500 text-lg">
+  <div class="text-center text-red-500 text-lg" aria-live="assertive">
     {{ message }}
   </div>
 </template>

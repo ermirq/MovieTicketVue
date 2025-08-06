@@ -127,7 +127,6 @@ onMounted(() => {
 });
 </script>
 
-
 <template>
   <div class="min-h-screen flex flex-col items-center py-8 px-4 bg-gray-900 text-gray-100 pt-20">
     <BaseTitle v-once>Rezervimi i Biletave</BaseTitle>
@@ -136,28 +135,42 @@ onMounted(() => {
     <BaseAlert v-else-if="errorMessage" type="error">{{ errorMessage }}</BaseAlert>
     <div v-else-if="!showtime" class="text-white text-center text-lg">Nuk u gjetën detaje për këtë shfaqje.</div>
     
-    <div v-else class="bg-gray-800 bg-opacity-70 p-8 rounded-lg shadow-xl max-w-4xl w-full">
-      <h1 class="text-3xl font-bold text-white mb-2 text-center">{{ showtime.movie?.title }}</h1>
-      <p class="text-gray-300 text-center mb-6">{{ showtime.movie?.genre }} | {{ showtime.movie?.durationInMinutes }} min</p>
+    <div v-else class="bg-gray-800 bg-opacity-70 p-8 rounded-lg shadow-xl max-w-4xl w-full" aria-label="Detajet e shfaqjes">
+      <h1 class="text-3xl font-bold text-white mb-2 text-center" aria-label="Titulli i filmit">{{ showtime.movie?.title }}</h1>
+      <p class="text-gray-300 text-center mb-6" aria-label="Zhanri dhe kohëzgjatja e filmit">{{ showtime.movie?.genre }} | {{ showtime.movie?.durationInMinutes }} min</p>
 
       <div class="flex flex-col md:flex-row gap-8 items-start justify-center">
         <div class="flex flex-col items-center">
           <img
             :src="showtime.movie?.posterUrl"
-            alt="Movie Poster"
+            alt="Poster i filmit"
+            aria-label="Poster i filmit"
             class="w-full max-w-xs h-auto object-cover rounded-lg shadow-md"
           />
-          </div>
+        </div>
 
         <div class="flex flex-col items-start w-full md:w-auto">
-          <ShowtimeInfo :showtime="showtime" :formatDate="formatDate" :formatTime="formatTime" class="mb-6" /> 
+          <ShowtimeInfo 
+            :showtime="showtime" 
+            :formatDate="formatDate" 
+            :formatTime="formatTime" 
+            class="mb-6" 
+            aria-label="Informacioni i shfaqjes"
+          /> 
           
-          <h3 class="text-xl font-semibold text-red-500 mb-4">Zgjidhni Vendet:</h3>
-          <SeatSelection :seatsByRow="seatsByRow" :selectedSeats="selectedSeats" @toggle="toggleSeatSelection" />
+          <h3 class="text-xl font-semibold text-red-500 mb-4" aria-label="Zgjidh vendet">Zgjidhni Vendet:</h3>
+          <SeatSelection 
+            :seatsByRow="seatsByRow" 
+            :selectedSeats="selectedSeats" 
+            @toggle="toggleSeatSelection" 
+            aria-label="Zona e zgjedhjes së vendeve"
+          />
         </div>
       </div>
     
-      <p class="text-gray-300 text-center my-4">Vendet e zgjedhura: {{ selectedSeatLabels }}</p>
+      <p class="text-gray-300 text-center my-4" aria-label="Vendet e zgjedhura">
+        Vendet e zgjedhura: {{ selectedSeatLabels }}
+      </p>
 
       <BaseButton
         :disabled="selectedSeats.length === 0 || !isAuthenticated"
@@ -167,11 +180,19 @@ onMounted(() => {
           'bg-gray-500 text-gray-300 cursor-not-allowed': selectedSeats.length === 0 || !isAuthenticated
         }" 
         @click="handleBooking"
+        aria-label="Butoni për konfirmimin e rezervimit"
       >
         KONFIRMO REZERVIMIN
       </BaseButton>
 
-      <BaseAlert v-if="successMessage" type="success" class="mt-4 text-center rounded-full">{{ successMessage }}</BaseAlert>
+      <BaseAlert 
+        v-if="successMessage" 
+        type="success" 
+        class="mt-4 text-center rounded-full" 
+        aria-label="Mesazh suksesi"
+      >
+        {{ successMessage }}
+      </BaseAlert>
     </div>
   </div>
 </template>

@@ -22,6 +22,7 @@ defineEmits(['update:modelValue']);
 
     <select
       :id="id"
+      :aria-label="ariaLabel"
       :value="modelValue"
       @change="$emit('update:modelValue', $event.target.value)"
       class="w-full mb-4 px-4 py-2 rounded-full bg-gray-700 bg-opacity-50 border border-gray-600 focus:border-blue-500 focus:ring focus:ring-blue-500 focus:ring-opacity-50 text-white outline-none appearance-none"

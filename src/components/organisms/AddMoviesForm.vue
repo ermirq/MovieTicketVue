@@ -75,8 +75,7 @@ const handleAddMovie = async () => {
 </script>
 
 <template>
-  <form @submit.prevent="handleAddMovie">
-    <BaseInput id="title"
+  <form @submit.prevent="handleAddMovie" aria-label="Forma per shtimin e filmit"> <BaseInput id="title"
       label="Titulli"
       v-model="title"
       placeholder="Titulli i filmit" required />
@@ -108,11 +107,9 @@ const handleAddMovie = async () => {
         'w-full font-bold py-3 px-4 rounded-full transition duration-300': true,
         'bg-red-600 hover:bg-red-700 text-white': isAdmin,
         'bg-gray-500 text-gray-300 cursor-not-allowed': !isAdmin
-      }">
-      SHTO FILM
+      }"
+      aria-label="Shto Film"> SHTO FILM
     </BaseButton>
 
-    <p v-if="successMessage" class="text-green-400 mt-4">{{ successMessage }}</p>
-    <p v-if="errorMessage" class="text-red-400 mt-4">{{ errorMessage }}</p>
-  </form>
+    <p v-if="successMessage" class="text-green-400 mt-4" aria-live="polite">{{ successMessage }}</p> <p v-if="errorMessage" class="text-red-400 mt-4" aria-live="polite">{{ errorMessage }}</p> </form>
 </template>

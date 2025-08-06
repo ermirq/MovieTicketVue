@@ -80,8 +80,7 @@ const handleAddCinema = async () => {
 </script>
 
 <template>
-  <form @submit.prevent="handleAddCinema">
-    <BaseInput v-model="name" 
+  <form @submit.prevent="handleAddCinema" aria-label="Forma per shtimin e kinemase"> <BaseInput v-model="name" 
       label="Emri i Kinemasë" 
       id="name" 
       placeholder="Emri i Kinemasë" required />
@@ -93,17 +92,17 @@ const handleAddCinema = async () => {
      placeholder="Lokacioni i Kinemasë" required />
 
     <BaseInput v-model.number="numRows"
-     label="Numri i Rreshtave" 
-     id="numRows" 
-     placeholder="Numri i rreshtave" 
-     min="1" 
-     max="26" required />
+      label="Numri i Rreshtave" 
+      id="numRows" 
+      placeholder="Numri i rreshtave" 
+      min="1" 
+      max="26" required />
 
     <BaseInput v-model.number="seatsPerRow"
-     label="Vendet per rresht" 
-     id="seatsPerRow" 
-     placeholder="Vendet per rresht" 
-     min="1" required />
+      label="Vendet per rresht" 
+      id="seatsPerRow" 
+      placeholder="Vendet per rresht" 
+      min="1" required />
 
     <BaseButton
       type="submit"
@@ -112,11 +111,9 @@ const handleAddCinema = async () => {
         'w-full font-bold py-3 px-4 rounded-full transition duration-300': true,
         'bg-red-600 hover:bg-red-700 text-white': isAdmin,
         'bg-gray-500 text-gray-300 cursor-not-allowed': !isAdmin
-      }">
-      SHTO KINEMA
+      }"
+      aria-label="Shto Kinema"> SHTO KINEMA
     </BaseButton>
 
-    <p v-if="successMessage" class="text-green-400 mt-4">{{ successMessage }}</p>
-    <p v-if="errorMessage" class="text-red-400 mt-4">{{ errorMessage }}</p>
-  </form>
+    <p v-if="successMessage" class="text-green-400 mt-4" aria-live="polite">{{ successMessage }}</p> <p v-if="errorMessage" class="text-red-400 mt-4" aria-live="polite">{{ errorMessage }}</p> </form>
 </template>

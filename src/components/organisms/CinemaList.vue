@@ -8,7 +8,7 @@ const emits = defineEmits(['edit-cinema', 'delete-cinema', 'edit-showtime', 'del
 </script>
 
 <template>
-  <div class="text-center grid grid-cols-1 md:grid-cols-1 lg:grid-cols-1 gap-6 mt-10">
+  <div class="text-center grid grid-cols-1 md:grid-cols-1 lg:grid-cols-1 gap-6 mt-10" aria-label="Lista e kinemave">
     <CinemaCard
       v-for="cinema in props.cinemas"
       :key="cinema.id"

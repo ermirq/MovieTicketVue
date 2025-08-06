@@ -45,6 +45,7 @@ const updateDate = (value) => {
         <BaseInput
             v-model="searchQuery"
             @keyup.enter="searchMovies"
+            :aria-label="'Kërko film'"
             type="text"
             placeholder="Kërko film..."
             style="margin-right:0;"

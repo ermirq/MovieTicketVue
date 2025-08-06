@@ -103,8 +103,7 @@ const handleAddShowtime = async () => {
 </script>
 
 <template>
-  <form @submit.prevent="handleAddShowtime" >
-    <BaseSelect
+  <form @submit.prevent="handleAddShowtime" aria-label="Forma per shtimin e shfaqjes"> <BaseSelect
       id="movie"
       v-model="selectedMovieId"
       label="Filmi"
@@ -141,11 +140,9 @@ const handleAddShowtime = async () => {
         'w-full font-bold py-3 px-4 rounded-full transition duration-300': true,
         'bg-red-600 hover:bg-red-700 text-white': isAdmin,
         'bg-gray-500 text-gray-300 cursor-not-allowed': !isAdmin
-      }">
-      SHTO SHFAQJE
+      }"
+      aria-label="Shto Shfaqje"> SHTO SHFAQJE
     </BaseButton>
 
-    <p v-if="successMessage" class="text-green-400 mt-4">{{ successMessage }}</p>
-    <p v-if="errorMessage" class="text-red-400 mt-4">{{ errorMessage }}</p>
-  </form>
+    <p v-if="successMessage" class="text-green-400 mt-4" aria-live="polite">{{ successMessage }}</p> <p v-if="errorMessage" class="text-red-400 mt-4" aria-live="polite">{{ errorMessage }}</p> </form>
 </template>

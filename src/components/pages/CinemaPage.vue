@@ -18,7 +18,6 @@ const { isAdmin } = storeToRefs(authStore);
 const { del } = useApi();
 
 const token = localStorage.getItem('userToken');
-if (!token) router.push({ name: 'LoginPage' });
 
 const { result: cinemas, loading, error, refetch } = useFetch('/api/Cinemas', {
   headers: {
@@ -99,22 +98,16 @@ const handleDeleteShowtime = async (showtimeId, movieTitle) => {
     alert(err.message || 'Gabim gjatë fshirjes së shfaqjes.');
   }
 };
-
-onMounted(() => {
-  if (!token) {
-    router.push({ name: 'LoginPage' });
-  }
-});
 </script>
 
 <template>
   <div class="bg-gray-900 text-gray-100 min-h-screen pt-20">
     <div class="container mx-auto px-4">
-      <CinemaHeader v-model:modelValue="selectedCountry" />
+      <CinemaHeader v-model:modelValue="selectedCountry" aria-label="Filtro kinematë sipas vendit"/>
 
       <LoadingSpinner v-if="loading" />
-      <ErrorMessage v-else-if="error">{{ error }}</ErrorMessage>
-      <div v-else-if="filteredCinemas.length === 0" class="text-white text-center p-4">
+      <ErrorMessage v-else-if="error" aria-live="assertive">{{ error }}</ErrorMessage>
+      <div v-else-if="filteredCinemas.length === 0" class="text-white text-center p-4" aria-live="polite">
         Nuk u gjetën kinema.
       </div>
       <CinemaList

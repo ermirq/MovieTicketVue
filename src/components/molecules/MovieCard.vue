@@ -62,8 +62,8 @@ const handleDeleteShowtime = () => {
         <select
           v-model="selectedShowtimeId"
           @change="handleShowtimeChange"
-          class="mt-2 p-2 rounded bg-gray-600 border border-gray-300 dark:border-gray-600 text-white">
-          <option disabled value="">Zgjidh shfaqjen</option>
+          class="mt-2 p-2 rounded bg-gray-600 border border-gray-300 dark:border-gray-600 text-white"
+          aria-label="Zgjidh shfaqjen"> <option disabled value="">Zgjidh shfaqjen</option>
           <option v-for="showtime in movie.showtimes" :key="showtime.id" :value="showtime.id">
             {{ formatDate(showtime.startTime) }} - {{ formatTime(showtime.startTime) }}
           </option>
@@ -71,8 +71,7 @@ const handleDeleteShowtime = () => {
       </div>
 
       <div v-if="isAdmin" class="bg-red-600 hover:bg-red-700 text-white rounded-md mt-2">
-        <BaseButton @click="handleDeleteMovie">
-          <i class="fas fa-trash-alt"></i>
+        <BaseButton @click="handleDeleteMovie" aria-label="Fshi Filmin"> <i class="fas fa-trash-alt"></i>
         </BaseButton>
       </div>
     </div>
@@ -83,8 +82,7 @@ const handleDeleteShowtime = () => {
     <h4 class="text-lg font-semibold text-white">{{ showtime.movie?.title }}</h4>
 
     <router-link :to="`/booking/${showtime.id}`" custom v-slot="{ navigate }">
-      <BaseButton @click="navigate" class="mt-auto bg-red-600 hover:bg-red-700 text-white font-bold mt-2 py-2 px-4 rounded-md">
-        Rezervo Biletën
+      <BaseButton @click="navigate" class="mt-auto bg-red-600 hover:bg-red-700 text-white font-bold mt-2 py-2 px-4 rounded-md" aria-label="Rezervo Biletën"> Rezervo Biletën
       </BaseButton>
     </router-link>
 

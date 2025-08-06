@@ -106,8 +106,7 @@ onMounted(() => {
 
 <template>
   <div class="bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 min-h-screen font-sans">
-    <div class="text-center container mx-auto ">
-      <FiltersBar v-model:search="searchQuery" :countries="countries" :dates="nextSevenDays" @search="searchMovies" />
+    <div class="text-center container mx-auto" aria-label="Përmbajtja e faqes kryesore"> <FiltersBar v-model:search="searchQuery" :countries="countries" :dates="nextSevenDays" @search="searchMovies" />
 
       <LoadingSpinner v-if="loading" message="Duke ngarkuar filmat..." />
       <ErrorMessage v-if="error" :message="error.message" />

@@ -54,16 +54,15 @@ const handleLogin = async () => {
 </script>
 
 <template>
-  <form @submit.prevent="handleLogin">
-    <BaseInput v-model="identifier" label="Username or Email" placeholder="Username or Email" :errors="errors.indentifier" />
+  <form @submit.prevent="handleLogin" aria-label="Forma e kyçjes"> <BaseInput v-model="identifier" label="Username or Email" placeholder="Username or Email" :errors="errors.indentifier" />
     <PasswordInput v-model="password" label="Password" placeholder="Password" :errors="errors.password" />
       
     <div class="text-right text-sm text-gray-400 hover:text-blue-400 mr-1 mb-6">
       <a href="#">Keni harruar fjalëkalimin?</a>
     </div>
 
-    <BaseButton type="submit"  class="bg-red-700 hover:bg-red-900 w-full rounded-full">KYÇUNI</BaseButton>
+    <BaseButton type="submit"  class="bg-red-700 hover:bg-red-900 w-full rounded-full" aria-label="Kyçuni"> KYÇUNI
+    </BaseButton>
 
-    <p v-if="errorMessage" class="text-red-400 mt-4">{{ errorMessage }}</p>
-  </form>
+    <p v-if="errorMessage" class="text-red-400 mt-4" aria-live="polite">{{ errorMessage }}</p> </form>
 </template>

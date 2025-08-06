@@ -15,15 +15,21 @@ const props = defineProps({
   class: {
     type: [String, Array, Object],
     default: ''
+  },
+  ariaLabel: {
+    type: String,
+    default: ''
   }
 });
 </script>
 
-
 <template>
-  <button :type="type"
-   @click="$emit('click', $event)"
-   :class="['cursor-pointer text-white font-bold px-3 py-2 transition duration-300', props.class]">
-   <slot />
+  <button
+    :type="type"
+    @click="$emit('click', $event)"
+    :aria-label="ariaLabel || undefined"
+    :class="['cursor-pointer text-white font-bold px-3 py-2 transition duration-300', props.class]"
+  >
+    <slot />
   </button>
 </template>

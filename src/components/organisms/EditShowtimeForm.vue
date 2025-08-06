@@ -156,12 +156,12 @@ onMounted(async () => {
 </script>
 
 <template>
-      <div v-if="loading" class="text-white">Duke ngarkuar të dhënat e shfaqjes...</div>
-      <div v-else-if="errorMessage && !isAdmin" class="text-red-400 mt-4">{{ errorMessage }}</div>
-      <div v-else-if="errorMessage" class="text-red-400 mt-4">{{ errorMessage }}</div>
-      <div v-else-if="!isAdmin" class="text-yellow-400 mt-4">Ju nuk jeni i autorizuar të përditësoni shfaqje.</div>
+      <div v-if="loading" class="text-white" aria-live="polite">Duke ngarkuar të dhënat e shfaqjes...</div>
+      <div v-else-if="errorMessage && !isAdmin" class="text-red-400 mt-4" aria-live="assertive">{{ errorMessage }}</div>
+      <div v-else-if="errorMessage" class="text-red-400 mt-4" aria-live="assertive">{{ errorMessage }}</div>
+      <div v-else-if="!isAdmin" class="text-yellow-400 mt-4" aria-live="assertive">Ju nuk jeni i autorizuar të përditësoni shfaqje.</div>
 
-      <form v-else @submit.prevent="handleUpdateShowtime">
+      <form v-else @submit.prevent="handleUpdateShowtime" aria-label="Forma per perditesimin e shfaqjes">
         <BaseSelect type="text"
             id="movie"
             v-model="selectedMovieId"
@@ -200,10 +200,11 @@ onMounted(async () => {
           :disabled="!isAdmin"
           :class="{'w-full font-bold py-3 px-4 rounded-full transition duration-300': true,
             'bg-blue-600 hover:bg-blue-700 text-white': isAdmin,
-            'bg-gray-500 text-gray-300 cursor-not-allowed': !isAdmin}">
+            'bg-gray-500 text-gray-300 cursor-not-allowed': !isAdmin}"
+          aria-label="Përditëso Shfaqje">
             PËRDITËSO SHFAQJE
         </BaseButton>
 
-        <p v-if="successMessage" class="text-green-400 mt-4">{{ successMessage }}</p>
+        <p v-if="successMessage" class="text-green-400 mt-4" aria-live="polite">{{ successMessage }}</p>
       </form>
 </template>
