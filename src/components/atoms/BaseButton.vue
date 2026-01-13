@@ -1,7 +1,35 @@
-
+<script setup>
+const props = defineProps({
+  type: {
+    type: String,
+    default: 'button',
+  },
+  color: {
+    type: String,
+    default: 'primary'
+  },
+  onClick: {
+    type: Function,
+    default: null
+  },
+  class: {
+    type: [String, Array, Object],
+    default: ''
+  },
+  ariaLabel: {
+    type: String,
+    default: ''
+  }
+});
+</script>
 
 <template>
-  <button :type="type" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-4 rounded-full transition duration-300">
+  <button
+    :type="type"
+    @click="$emit('click', $event)"
+    :aria-label="ariaLabel || undefined"
+    :class="['cursor-pointer text-white font-bold px-3 py-2 transition duration-300', props.class]"
+  >
     <slot />
   </button>
 </template>

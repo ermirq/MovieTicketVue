@@ -1,82 +1,90 @@
 import { createRouter, createWebHistory } from 'vue-router';
-import Home from '../components/Home.vue'; 
-import Login from '../components/Login.vue'; 
-import Register from '../components/Register.vue';
-import Cinema from '../components/Cinema.vue';
-import AddMovies from '../components/AddMovies.vue';
-import AddShowtime from '../components/AddShowtime.vue';
-import Booking from '../components/Booking.vue';
-import MyAccount from '../components/MyAccount.vue';
-import AddCinema from '../components/AddCinema.vue';
-import EditCinema from '../components/EditCinema.vue';
-import EditShowtime from '../components/EditShowtime.vue';
-import LoginForm from '../components/organisms/LoginForm.vue';
-import LoginPage from '../components/pages/LoginPage.vue';
-import RegisterPage from '../components/pages/RegisterPage.vue';
+import { useAuthStore } from '../assets/authVerification/useAuth.js';
 
 const routes = [
   {
     path: '/',
     name: 'Home',
-    component: Home,
+    component: () => import('../components/pages/MoviePage.vue') 
   },
   {
-    path: '/login', 
+    path: '/login',
     name: 'LoginPage',
-    component: LoginPage,
+    component: () => import('../components/pages/LoginPage.vue') 
   },
   {
     path: '/register',
     name: 'RegisterPage',
-    component: RegisterPage,
+    component: () => import('../components/pages/RegisterPage.vue')
   },
   {
     path: '/kinemat',
     name: 'Cinema',
-    component: Cinema,
+    component: () => import('../components/pages/CinemaPage.vue') 
   },
   {
     path: '/add-movie',
-    name: 'AddMovie',
-    component: AddMovies
+    name: 'AddMovies',
+    component: () => import('../components/pages/AddMoviesPage.vue'),
+    meta: { requiresAuth: true, requiresRole: 'Admin' }
   },
   {
     path: '/add-showtime',
-    name: 'AddShowtime',
-    component: AddShowtime
+    name: 'AddShowtimePage',
+    component: () => import('../components/pages/AddShowtimePage.vue'),
+    meta: { requiresAuth: true, requiresRole: 'Admin' }
+  },
+  {
+    path: '/add-cinemas',
+    name: 'AddCinemaPage',
+    component: () => import('../components/pages/AddCinemaPage.vue'),
+    meta: { requiresAuth: true, requiresRole: 'Admin' }
+  },
+  {
+    path: '/edit-cinema/:id',
+    name: 'EditCinemaPage',
+    component: () => import('../components/pages/EditCInemaPage.vue'),
+    meta: { requiresAuth: true, requiresRole: 'Admin' }
+  },
+  {
+    path: '/edit-showtime/:id',
+    name: 'EditShowtimePage',
+    component: () => import('../components/pages/EditShowtimePage.vue'),
+    meta: { requiresAuth: true, requiresRole: 'Admin' }
   },
   {
     path: '/booking/:showtimeId',
     name: 'Booking',
-    component: Booking,
+    component: () => import('../components/pages/BookingPage.vue'),
     props: true,
-    meta: {requiresAuth: true}
+    meta: { requiresAuth: true }
   },
   {
     path: '/myaccount',
     name: 'MyAccount',
-    component: MyAccount
+    component: () => import('../components/pages/MyAccountPage.vue'),
+    meta: { requiresAuth: true }
   },
-  {
-    path: '/add-cinemas',
-    name: 'AddCinema',
-    component: AddCinema
-  },
-  {
-    path: '/edit-cinema/:id',
-    name: 'EditCinema',
-    component: EditCinema
-  },
-  {
-    path: '/edit-showtime/:id',
-    name: 'EditShowtime',
-    component: EditShowtime
-  }
 ];
 
 const router = createRouter({
   history: createWebHistory(),
   routes,
+});
+
+router.beforeEach((to, from, next) => {
+  const authStore = useAuthStore();
+
+  if (to.meta.requiresAuth && !authStore.isAuthenticated) {
+    return next({ name: 'LoginPage', query: { redirect: to.fullPath } });
+  }
+
+  if (to.meta.requiresRole && !authStore.userRoles.includes(to.meta.requiresRole)) {
+    alert('Nuk keni qasje në këtë faqe.');
+    return next({ name: 'Home' });
+  }
+
+  next();
 });
 
 export default router;

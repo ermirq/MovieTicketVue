@@ -1,12 +1,17 @@
 <script setup>
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, computed } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
-import { useAuthStore } from '../assets/authVerification/useAuth.js';
-import axios from 'axios';
+import { useAuthStore } from '../../assets/authVerification/useAuth.js';
+import { storeToRefs } from 'pinia';
+import BaseInput from '../atoms/BaseInput.vue';
+import BaseButton from '../atoms/BaseButton.vue';
+import { useApi } from '../../composables/useApi.js';
 
-const { isAdmin } = useAuthStore();
+const authStore = useAuthStore();
+const { isAdmin } = storeToRefs(authStore);
 const route = useRoute();
 const router = useRouter();
+const { put, get } = useApi();
 
 const cinemaId = ref(null);
 const name = ref('');
@@ -18,7 +23,8 @@ const loading = ref(true);
 const errorMessage = ref('');
 const successMessage = ref('');
 
-const API_BASE_URL = 'https://localhost:7127';
+const isFormValid = computed(() => name.value && location.value);
+
 
 const fetchCinema = async () => {
   loading.value = true;
@@ -40,17 +46,18 @@ const fetchCinema = async () => {
       return;
     }
 
-    const response = await axios.get(`${API_BASE_URL}/api/Cinemas/${id}`, {
-      headers: {
-        'Authorization': `Bearer ${token}`
-      }
+  const response = await get(`/api/Cinemas/${id}`, {
+      headers: { 'Authorization': `Bearer ${token}` }
     });
 
-    const data = response.data
-    name.value = data.name;
-    location.value = data.location;
-    numRows.value = data.numRows;        
-    seatsPerRow.value = data.seatsPerRow; 
+    if (response) {
+      name.value = response.name;
+      location.value = response.location;
+      numRows.value = response.numRows;
+      seatsPerRow.value = response.seatsPerRow;
+    } else {
+      errorMessage.value = 'Nuk u gjetën të dhënat e kinemasë.';
+    }
 
   } catch (error) {
     console.error('Gabim gjatë ngarkimit të kinemasë:', error);
@@ -69,7 +76,7 @@ const handleUpdateCinema = async () => {
   errorMessage.value = '';
   successMessage.value = '';
 
-  if (!name.value || !location.value) {
+  if (!isFormValid.value) {
     errorMessage.value = 'Ju lutemi plotësoni të gjitha fushat.';
     return;
   }
@@ -82,7 +89,7 @@ const handleUpdateCinema = async () => {
         return;
     }
 
-    const response = await axios.put(`${API_BASE_URL}/api/Cinemas/${cinemaId.value}`, {
+      await put(`/api/Cinemas/${cinemaId.value}`, {
         name: name.value,
         location: location.value
     },
@@ -131,54 +138,40 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="min-h-screen flex items-center justify-center py-8 px-4 bg-gray-900 text-gray-100">
-    <div class="relative bg-gray-800 bg-opacity-70 p-8 rounded-lg shadow-xl text-center max-w-md w-full mt-20 z-20">
-      <h2 class="text-3xl font-bold text-white mb-6">PËRDITËSO KINEMANË</h2>
+    
+      <div v-if="loading" class="text-white" aria-live="polite">Duke ngarkuar të dhënat e kinemasë...</div>
+      <div v-else-if="errorMessage && !isAdmin" class="text-red-400 mt-4" aria-live="assertive">{{ errorMessage }}</div>
+      <div v-else-if="errorMessage" class="text-red-400 mt-4" aria-live="assertive">{{ errorMessage }}</div>
+      <div v-else-if="!isAdmin" class="text-yellow-400 mt-4" aria-live="assertive">Ju nuk jeni i autorizuar të përditësoni kinema.</div>
 
-      <div v-if="loading" class="text-white">Duke ngarkuar të dhënat e kinemasë...</div>
-      <div v-else-if="errorMessage && !isAdmin" class="text-red-400 mt-4">{{ errorMessage }}</div>
-      <div v-else-if="errorMessage" class="text-red-400 mt-4">{{ errorMessage }}</div>
-      <div v-else-if="!isAdmin" class="text-yellow-400 mt-4">Ju nuk jeni i autorizuar të përditësoni kinema.</div>
-
-      <form v-else @submit.prevent="handleUpdateCinema">
-        <div class="mb-4">
-          <label for="name" class="block text-left text-gray-300 text-sm font-medium mb-2 ml-1">Emri i Kinemasë</label>
-          <input
+      <form v-else @submit.prevent="handleUpdateCinema" aria-label="Forma per perditesimin e kinemase">
+          <BaseInput
             type="text"
             id="name"
+            label="Emri i Kinemasë"
             v-model="name"
-            class="w-full px-4 py-2 rounded-full bg-gray-700 bg-opacity-50 border border-gray-600 focus:border-blue-500 focus:ring focus:ring-blue-500 focus:ring-opacity-50 text-white placeholder-gray-400 outline-none"
             placeholder="Emri i Kinemasë"
-            required
-          />
-        </div>
+            required/>
 
-        <div class="mb-4">
-          <label for="location" class="block text-left text-gray-300 text-sm font-medium mb-2 ml-1">Lokacioni</label>
-          <input
+          <BaseInput
             type="text"
             id="location"
             v-model="location"
-            class="w-full px-4 py-2 rounded-full bg-gray-700 bg-opacity-50 border border-gray-600 focus:border-blue-500 focus:ring focus:ring-blue-500 focus:ring-opacity-50 text-white placeholder-gray-400 outline-none"
+            label="Lokacioni"
             placeholder="Lokacioni i Kinemasë"
-            required
-          />
-        </div>
+            required/>
         
-        <button
+        <BaseButton
           type="submit"
           :disabled="!isAdmin || loading"
           :class="{
             'w-full font-bold py-3 px-4 rounded-full transition duration-300': true,
             'bg-blue-600 hover:bg-blue-700 text-white': isAdmin && !loading,
-            'bg-gray-500 text-gray-300 cursor-not-allowed': !isAdmin || loading
-          }"
-        >
+            'bg-gray-500 text-gray-300 cursor-not-allowed': !isAdmin || loading}"
+          aria-label="Përditëso Kinemanë">
           PËRDITËSO KINEMANË
-        </button>
+        </BaseButton>
 
-        <p v-if="successMessage" class="text-green-400 mt-4">{{ successMessage }}</p>
-      </form>
-    </div>
-  </div>
+        <p v-if="successMessage" class="text-green-400 mt-4" aria-live="polite">{{ successMessage }}</p>
+    </form>
 </template>
